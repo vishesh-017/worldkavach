@@ -661,19 +661,24 @@ let ws;
         const ovData = createVisData(mapData);
         const ovOptions = {
           physics: {
-            stabilization: { iterations: 150 },
+            enabled: true,
+            stabilization: {
+              enabled: true,
+              iterations: 200,
+              updateInterval: 10,
+              fit: false
+            },
             barnesHut: {
               gravitationalConstant: -5000,
               springLength: 60,
-              springConstant: 0.08,
-              damping: 0.12
+              springConstant: 0.04,
+              damping: 0.5        // high damping = quick settle, no bounce
             }
           },
           interaction: { hover: true, tooltipDelay: 100, zoomView: true, dragView: true }
         };
         if (!overviewNetwork) {
           // Pin container to current pixel size BEFORE vis.js reads it
-          // Prevents surrounding layout reflow from giving vis.js a wrong canvas height
           var _pinH = ovContainer.clientHeight || 600;
           var _pinW = ovContainer.clientWidth || 900;
           ovContainer.style.height = _pinH + 'px';
@@ -693,13 +698,15 @@ let ws;
             }
           });
           overviewNetwork.once('stabilizationIterationsDone', () => {
+            // DISABLE physics once stable — nodes freeze, no more vibration
+            overviewNetwork.setOptions({ physics: { enabled: false } });
             setTimeout(function() {
               if (overviewNetwork) {
                 overviewNetwork.setSize('100%', '100%');
                 overviewNetwork.redraw();
                 overviewNetwork.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
               }
-            }, 100);
+            }, 80);
           });
           // ResizeObserver — keeps canvas pinned to container at all times
           if (window.ResizeObserver && !ovContainer._wmResizeObserver) {
@@ -712,16 +719,32 @@ let ws;
             ovContainer._wmResizeObserver.observe(ovContainer);
           }
         } else {
-          overviewNetwork.setOptions(ovOptions);
+          // Re-enable physics for brief re-stabilization, then freeze again
+          overviewNetwork.setOptions({
+            physics: {
+              enabled: true,
+              barnesHut: { gravitationalConstant: -5000, springLength: 60, springConstant: 0.04, damping: 0.5 },
+              stabilization: { iterations: 150, updateInterval: 10 }
+            }
+          });
           overviewNetwork.setData(ovData);
+          overviewNetwork.once('stabilizationIterationsDone', function() {
+            overviewNetwork.setOptions({ physics: { enabled: false } });
+            setTimeout(function() {
+              if (overviewNetwork) {
+                overviewNetwork.setSize('100%', '100%');
+                overviewNetwork.redraw();
+                overviewNetwork.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+              }
+            }, 80);
+          });
         }
-        // Assert size at 3 checkpoints after data changes
-        [100, 400, 900].forEach(function(ms) {
+        // Assert canvas size at 2 checkpoints
+        [120, 500].forEach(function(ms) {
           setTimeout(function() {
             if (overviewNetwork) {
               overviewNetwork.setSize('100%', '100%');
               overviewNetwork.redraw();
-              if (ms > 400) overviewNetwork.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
             }
           }, ms);
         });
