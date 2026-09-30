@@ -183,6 +183,7 @@ async def download_html_report():
 
 
 @app.get("/api/assessment/report/pdf")
+@app.get("/api/assessment/report/worldkavach_security_report.pdf")
 async def download_pdf_report():
     try:
         pdf_bytes = ReportGenerator.generate_pdf_report(
@@ -201,13 +202,15 @@ async def download_pdf_report():
         content=pdf_bytes,
         media_type="application/pdf",
         headers={
-            "Content-Disposition": 'attachment; filename="worldkavach_security_report.pdf"',
-            "Content-Type": "application/pdf"
+            "Content-Disposition": 'attachment; filename="worldkavach_security_report.pdf"; filename*=UTF-8\'\'worldkavach_security_report.pdf',
+            "Content-Type": "application/pdf",
+            "Cache-Control": "no-cache, no-store, must-revalidate"
         }
     )
 
 
 @app.get("/api/assessment/report/csv")
+@app.get("/api/assessment/report/worldkavach_findings.csv")
 async def download_csv_report():
     csv_str = ReportGenerator.generate_csv_report(
         orchestrator.findings,
@@ -217,11 +220,15 @@ async def download_csv_report():
     return PlainTextResponse(
         content=csv_str,
         media_type="text/csv",
-        headers={"Content-Disposition": 'attachment; filename="worldkavach_security_report.csv"'}
+        headers={
+            "Content-Disposition": 'attachment; filename="worldkavach_findings.csv"; filename*=UTF-8\'\'worldkavach_findings.csv',
+            "Cache-Control": "no-cache, no-store, must-revalidate"
+        }
     )
 
 
 @app.get("/api/assessment/report/json")
+@app.get("/api/assessment/report/worldkavach_deliverables.json")
 async def download_json_report():
     json_str = ReportGenerator.generate_json_report(
         orchestrator.findings,
@@ -231,11 +238,15 @@ async def download_json_report():
     return Response(
         content=json_str,
         media_type="application/json",
-        headers={"Content-Disposition": 'attachment; filename="worldkavach_security_report.json"'}
+        headers={
+            "Content-Disposition": 'attachment; filename="worldkavach_deliverables.json"; filename*=UTF-8\'\'worldkavach_deliverables.json',
+            "Cache-Control": "no-cache, no-store, must-revalidate"
+        }
     )
 
 
 @app.get("/api/assessment/report/markdown")
+@app.get("/api/assessment/report/worldkavach_security_report.md")
 async def download_markdown_report():
     md_str = ReportGenerator.generate_markdown_report(
         orchestrator.findings,
@@ -244,7 +255,10 @@ async def download_markdown_report():
     )
     return PlainTextResponse(
         content=md_str,
-        headers={"Content-Disposition": 'attachment; filename="worldkavach_security_report.md"'}
+        headers={
+            "Content-Disposition": 'attachment; filename="worldkavach_security_report.md"; filename*=UTF-8\'\'worldkavach_security_report.md',
+            "Cache-Control": "no-cache, no-store, must-revalidate"
+        }
     )
 
 

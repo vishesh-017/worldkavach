@@ -417,19 +417,19 @@
     <div class="sidebar-downloads-section">
       <div class="menu-heading" style="padding:0.2rem 0.1rem 0.35rem 0.1rem;">Quick Deliverables</div>
       <div class="sidebar-dl-container">
-        <a href="/api/assessment/report/pdf" download="worldkavach_security_report.pdf" class="sidebar-dl-btn" title="Download Executive PDF Audit Report">
+        <a href="/api/assessment/report/worldkavach_security_report.pdf" onclick="event.preventDefault(); downloadReport('pdf')" download="worldkavach_security_report.pdf" class="sidebar-dl-btn" title="Download Executive PDF Audit Report">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           <span>PDF</span>
         </a>
-        <a href="/api/assessment/report/csv" download="worldkavach_findings.csv" class="sidebar-dl-btn" title="Download Findings CSV Ledger">
+        <a href="/api/assessment/report/worldkavach_findings.csv" onclick="event.preventDefault(); downloadReport('csv')" download="worldkavach_findings.csv" class="sidebar-dl-btn" title="Download Findings CSV Ledger">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           <span>CSV</span>
         </a>
-        <a href="/api/assessment/report/json" download="worldkavach_deliverables.json" class="sidebar-dl-btn" title="Download Complete JSON Deliverable">
+        <a href="/api/assessment/report/worldkavach_deliverables.json" onclick="event.preventDefault(); downloadReport('json')" download="worldkavach_deliverables.json" class="sidebar-dl-btn" title="Download Complete JSON Deliverable">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           <span>JSON</span>
         </a>
-        <a href="/api/assessment/report/markdown" download="worldkavach_security_report.md" class="sidebar-dl-btn" title="Download Markdown Audit Report">
+        <a href="/api/assessment/report/worldkavach_security_report.md" onclick="event.preventDefault(); downloadReport('markdown')" download="worldkavach_security_report.md" class="sidebar-dl-btn" title="Download Markdown Audit Report">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           <span>MD</span>
         </a>
@@ -518,9 +518,9 @@
           <!-- Streamlined Tactical Alert Ribbon (Height: 34px) -->
           <div class="tactical-ribbon">
             <div style="display:flex; align-items:center;">
-              <span class="ribbon-tag">ACTIVE EXPLOIT VECTOR</span>
-              <span class="ribbon-text">
-                <strong>Confirmed Exploits:</strong> TOCTOU DNS Rebinding SSRF (GHSA-887j-p88r-qmm9) &amp; Static CSP Nonce Script Bypass.
+              <span class="ribbon-tag" id="banner-tag">ACTIVE EXPLOIT VECTOR</span>
+              <span class="ribbon-text" id="banner-text">
+                <strong>Confirmed Exploits:</strong> Initializing assessment telemetry...
               </span>
             </div>
             <button class="btn btn-emerald" style="padding:0.2rem 0.55rem; font-size:0.68rem;" onclick="navTo('sandbox', null)">
@@ -684,54 +684,41 @@
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--rose)"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 16h2v2h-2zm0-6h2v4h-2z"/></svg>
                     <span>Confirmed Deliverables</span>
                   </div>
-                  <span class="tag-status confirmed" id="overview-findings-badge">6 Exploits Found</span>
+                  <span class="tag-status confirmed" id="overview-findings-badge">0 Exploits Found</span>
                 </div>
 
                 <!-- Quick Deliverables Download Options (USP Download Bar) -->
                 <div class="deliverables-quick-bar">
                   <span style="font-size:0.58rem; color:var(--text-muted); font-family:var(--font-mono); font-weight:700; width:100%;">DOWNLOAD DELIVERABLES:</span>
-                  <a href="/api/assessment/report/pdf" download="worldkavach_security_report.pdf" class="deliverables-dl-chip primary-pdf" title="Download Executive PDF Audit Report">
+                  <a href="/api/assessment/report/worldkavach_security_report.pdf" onclick="event.preventDefault(); downloadReport('pdf')" download="worldkavach_security_report.pdf" class="deliverables-dl-chip primary-pdf" title="Download Executive PDF Audit Report">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                     <span>PDF Report</span>
                   </a>
-                  <a href="/api/assessment/report/json" download="worldkavach_deliverables.json" class="deliverables-dl-chip" title="Download JSON Audit Deliverable">
+                  <a href="/api/assessment/report/worldkavach_deliverables.json" onclick="event.preventDefault(); downloadReport('json')" download="worldkavach_deliverables.json" class="deliverables-dl-chip" title="Download JSON Audit Deliverable">
                     <span>JSON</span>
                   </a>
-                  <a href="/api/assessment/report/csv" download="worldkavach_findings.csv" class="deliverables-dl-chip" title="Download CSV Findings Ledger">
+                  <a href="/api/assessment/report/worldkavach_findings.csv" onclick="event.preventDefault(); downloadReport('csv')" download="worldkavach_findings.csv" class="deliverables-dl-chip" title="Download CSV Findings Ledger">
                     <span>CSV</span>
                   </a>
-                  <a href="/api/assessment/report/markdown" download="worldkavach_security_report.md" class="deliverables-dl-chip" title="Download Markdown Audit Report">
+                  <a href="/api/assessment/report/worldkavach_security_report.md" onclick="event.preventDefault(); downloadReport('markdown')" download="worldkavach_security_report.md" class="deliverables-dl-chip" title="Download Markdown Audit Report">
                     <span>MD</span>
                   </a>
                 </div>
 
                 <!-- Big Redirect Button to Full Findings Page -->
-                <button class="btn btn-glow" style="width:100%; justify-content:center; padding:0.48rem; font-weight:800; font-size:0.74rem;" onclick="navTo('findings', document.querySelector('.nav-item[onclick*=\'findings\']'))">
+                <button class="btn btn-glow" id="overview-explore-btn" style="width:100%; justify-content:center; padding:0.48rem; font-weight:800; font-size:0.74rem;" onclick="navTo('findings', document.querySelector('.nav-item[onclick*=\'findings\']'))">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                  <span>Explore Full Vulnerabilities &amp; PoC Radar (6) &rarr;</span>
+                  <span id="overview-explore-btn-text">Explore Full Vulnerabilities &amp; PoC Radar (0) &rarr;</span>
                 </button>
 
-                <!-- Compact Highlighted Findings Rows -->
+                <!-- Compact Highlighted Findings Rows (Populated Dynamically) -->
                 <div class="deck-body" style="flex:1; gap:0.4rem; overflow-y:auto; max-height:220px;" id="overview-findings-list">
-                  <div class="finding-compact-item" onclick="openFindingModal('FIND-WM-001')">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                      <div class="finding-title" style="font-size:0.72rem; font-weight:700;">FIND-WM-001: Script Execution Bypass via Static CSP</div>
-                      <span class="finding-tag sev-critical" style="font-size:0.58rem; padding:0.1rem 0.35rem;">CVSS 9.3</span>
+                  <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.22); border-radius:6px; padding:0.85rem; text-align:center;">
+                    <div style="font-size:0.75rem; font-weight:700; color:#34d399; display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                      <span>&#10003;</span> No Verified Vulnerabilities Detected
                     </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.15rem; font-size:0.62rem; color:var(--text-muted); font-family:var(--font-mono);">
-                      <span>Content-Security-Policy (mcp-grant.html)</span>
-                      <span style="color:var(--emerald);">&#10003; Live Trace</span>
-                    </div>
-                  </div>
-
-                  <div class="finding-compact-item" onclick="openFindingModal('FIND-WM-002')">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                      <div class="finding-title" style="font-size:0.72rem; font-weight:700;">FIND-WM-002: SSRF via TOCTOU DNS Rebinding</div>
-                      <span class="finding-tag sev-high" style="font-size:0.58rem; padding:0.1rem 0.35rem;">CVSS 7.1</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.15rem; font-size:0.62rem; color:var(--text-muted); font-family:var(--font-mono);">
-                      <span>MCP Edge Proxy (api/mcp-proxy.ts)</span>
-                      <span style="color:var(--emerald);">&#10003; Live Trace</span>
+                    <div style="font-size:0.62rem; color:var(--text-muted); margin-top:0.25rem; font-family:var(--font-mono);">
+                      Target attack surface catalog verified clean under deterministic DAST probes.
                     </div>
                   </div>
                 </div>
@@ -915,17 +902,17 @@
             </div>
 
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-              <a href="/api/assessment/report/pdf" download="worldkavach_security_report.pdf" class="btn btn-glow" style="padding:0.55rem 1.15rem; background:linear-gradient(135deg, rgba(0, 240, 255, 0.25) 0%, rgba(2, 132, 199, 0.4) 100%); border-color:var(--cyan); color:#ffffff; font-weight:700;">
+              <a href="/api/assessment/report/worldkavach_security_report.pdf" onclick="event.preventDefault(); downloadReport('pdf')" download="worldkavach_security_report.pdf" class="btn btn-glow" style="padding:0.55rem 1.15rem; background:linear-gradient(135deg, rgba(0, 240, 255, 0.25) 0%, rgba(2, 132, 199, 0.4) 100%); border-color:var(--cyan); color:#ffffff; font-weight:700;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle; margin-right:4px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                 Download Executive PDF Audit Report (.pdf)
               </a>
-              <a href="/api/assessment/report/json" download="worldkavach_deliverables.json" class="btn" style="padding:0.55rem 1.15rem;">
+              <a href="/api/assessment/report/worldkavach_deliverables.json" onclick="event.preventDefault(); downloadReport('json')" download="worldkavach_deliverables.json" class="btn" style="padding:0.55rem 1.15rem;">
                 &#128190; Download Complete JSON Deliverable
               </a>
-              <a href="/api/assessment/report/markdown" download="worldkavach_security_report.md" class="btn" style="padding:0.55rem 1.15rem;">
+              <a href="/api/assessment/report/worldkavach_security_report.md" onclick="event.preventDefault(); downloadReport('markdown')" download="worldkavach_security_report.md" class="btn" style="padding:0.55rem 1.15rem;">
                 &#128196; Download Full Markdown Report (.md)
               </a>
-              <a href="/api/assessment/report/csv" download="worldkavach_findings.csv" class="btn" style="padding:0.55rem 1.15rem;">
+              <a href="/api/assessment/report/worldkavach_findings.csv" onclick="event.preventDefault(); downloadReport('csv')" download="worldkavach_findings.csv" class="btn" style="padding:0.55rem 1.15rem;">
                 &#128202; Download CSV Findings Ledger (.csv)
               </a>
             </div>

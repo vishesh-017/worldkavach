@@ -896,6 +896,40 @@ let ws;
     }
 
     /* ========================================================================
+       REPORT DOWNLOADS (cross-browser named file via fetch + Blob)
+       ======================================================================== */
+    async function downloadReport(format) {
+      const fileMap = {
+        'pdf':      { name: 'worldkavach_security_report.pdf',  mime: 'application/pdf' },
+        'csv':      { name: 'worldkavach_findings.csv',         mime: 'text/csv' },
+        'json':     { name: 'worldkavach_deliverables.json',    mime: 'application/json' },
+        'markdown': { name: 'worldkavach_security_report.md',   mime: 'text/markdown' }
+      };
+      const info = fileMap[format];
+      if (!info) return;
+      const url = `/api/assessment/report/${info.name}`;
+      try {
+        showToast('Preparing Report', `Generating ${format.toUpperCase()} report...`, 'info');
+        const resp = await fetch(url, { cache: 'no-store' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const blob = await resp.blob();
+        const typedBlob = new Blob([blob], { type: info.mime });
+        const blobUrl = window.URL.createObjectURL(typedBlob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = blobUrl;
+        a.download = info.name;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() { document.body.removeChild(a); window.URL.revokeObjectURL(blobUrl); }, 2000);
+        showToast('Download Started', info.name + ' is downloading...', 'info');
+      } catch (err) {
+        console.error('Download error:', err);
+        window.open(url, '_blank');
+      }
+    }
+
+    /* ========================================================================
        FINDINGS & RE-TEST
        ======================================================================== */
     function renderFindings(findings) {
@@ -918,8 +952,58 @@ let ws;
       // Synchronize dynamic risk score gauge & posture text
       updateDynamicRiskScore(null, null, count);
 
-      // Synchronize Executive Overview Live Deck
-      const ovMount = document.getElementById('overview-findings-mount');
+      // CONFIRMED DELIVERABLES DECK — badge, button text, banner, and list
+      var ovBadge = document.getElementById('overview-findings-badge');
+      if (ovBadge) {
+        if (count === 0) {
+          ovBadge.innerText = '0 Exploits (Clean)';
+          ovBadge.style.cssText += ';background:rgba(16,185,129,0.15);color:#34d399;border-color:rgba(16,185,129,0.4)';
+        } else {
+          ovBadge.innerText = count + ' Exploit' + (count > 1 ? 's' : '') + ' Found';
+          ovBadge.style.cssText += ';background:rgba(244,63,94,0.15);color:var(--rose);border-color:rgba(244,63,94,0.4)';
+        }
+      }
+      var exploreTxt = document.getElementById('overview-explore-btn-text');
+      if (exploreTxt) exploreTxt.innerHTML = 'Explore Full Vulnerabilities &amp; PoC Radar (' + count + ') &rarr;';
+      var bannerTag = document.getElementById('banner-tag');
+      var bannerTxt = document.getElementById('banner-text');
+      if (bannerTag && bannerTxt) {
+        if (count === 0) {
+          bannerTag.innerText = 'TARGET POSTURE: CLEAN';
+          bannerTag.style.cssText += ';background:rgba(16,185,129,0.25);color:#34d399;border-color:rgba(16,185,129,0.5)';
+          bannerTxt.innerHTML = '<strong>Security Status:</strong> No active exploit vectors verified. DAST assessment complete.';
+        } else {
+          bannerTag.innerText = 'ACTIVE EXPLOIT VECTOR';
+          bannerTag.style.cssText = '';
+          var topTitles = currentFindings.slice(0, 2).map(function(f){ return escapeHtml(f.title); }).join(' &amp; ');
+          bannerTxt.innerHTML = '<strong>Confirmed Exploits:</strong> ' + topTitles + (currentFindings.length > 2 ? ' &amp; ' + (currentFindings.length - 2) + ' more.' : '.');
+        }
+      }
+      var ovList = document.getElementById('overview-findings-list');
+      if (ovList) {
+        if (count === 0) {
+          ovList.innerHTML = '<div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.22);border-radius:6px;padding:0.85rem;text-align:center"><div style="font-size:0.75rem;font-weight:700;color:#34d399;display:flex;align-items:center;justify-content:center;gap:0.35rem"><span>&#10003;</span> No Verified Vulnerabilities Detected</div><div style="font-size:0.62rem;color:var(--text-muted);margin-top:0.25rem;font-family:var(--font-mono)">Target attack surface verified clean under deterministic DAST probes.</div></div>';
+        } else {
+          ovList.innerHTML = currentFindings.slice(0, 3).map(function(f) {
+            var isCrit = f.severity === 'CRITICAL' || (f.cvss_score && f.cvss_score >= 9.0);
+            var isHigh = f.severity === 'HIGH' || (f.cvss_score && f.cvss_score >= 7.0);
+            var sc = isCrit ? 'sev-critical' : (isHigh ? 'sev-high' : 'sev-medium');
+            return '<div class="finding-compact-item" onclick="openFindingModal(\'' + escapeHtml(f.id) + '\')" style="cursor:pointer">' +
+              '<div style="display:flex;justify-content:space-between;align-items:center">' +
+                '<div style="font-size:0.72rem;font-weight:700;color:#fff;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:0.4rem">' + escapeHtml(f.title) + '</div>' +
+                '<span class="finding-tag ' + sc + '" style="font-size:0.58rem;padding:0.1rem 0.35rem;flex-shrink:0">CVSS ' + f.cvss_score + '</span>' +
+              '</div>' +
+              '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.15rem;font-size:0.62rem;color:var(--text-muted);font-family:var(--font-mono)">' +
+                '<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70%">' + escapeHtml(f.affected_component) + '</span>' +
+                '<span style="color:var(--emerald);flex-shrink:0">&#10003; Live Trace</span>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+        }
+      }
+
+      // Synchronize Executive Overview (legacy mount — no-op if element absent)
+      var ovMount = document.getElementById('overview-findings-mount');
       if (ovMount) {
         if (count === 0) {
           ovMount.innerHTML = '<div style="color:var(--text-dark); padding:1.2rem; text-align:center; font-size:0.78rem;">No verified vulnerabilities detected for current target.</div>';
