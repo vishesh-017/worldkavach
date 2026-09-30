@@ -659,8 +659,20 @@ let ws;
           overviewNetwork = null;
         }
         const ovData = createVisData(mapData);
+        const ovOptions = {
+          physics: {
+            stabilization: { iterations: 150 },
+            barnesHut: {
+              gravitationalConstant: -5000,
+              springLength: 60,
+              springConstant: 0.08,
+              damping: 0.12
+            }
+          },
+          interaction: { hover: true, tooltipDelay: 100, zoomView: true, dragView: true }
+        };
         if (!overviewNetwork) {
-          overviewNetwork = new vis.Network(ovContainer, ovData, options);
+          overviewNetwork = new vis.Network(ovContainer, ovData, ovOptions);
           overviewNetwork.on('click', (params) => {
             if (params.nodes.length > 0) {
               const nodeId = params.nodes[0];
@@ -669,11 +681,15 @@ let ws;
             }
           });
           overviewNetwork.once('stabilizationIterationsDone', () => {
-            overviewNetwork.setSize('100%', '100%');
-            overviewNetwork.redraw();
-            overviewNetwork.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+            setTimeout(function() {
+              if (overviewNetwork) {
+                overviewNetwork.setSize('100%', '100%');
+                overviewNetwork.redraw();
+                overviewNetwork.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+              }
+            }, 100);
           });
-          // Attach ResizeObserver so the canvas always fills its container
+          // ResizeObserver — keeps canvas pinned to container at all times
           if (window.ResizeObserver && !ovContainer._wmResizeObserver) {
             ovContainer._wmResizeObserver = new ResizeObserver(function() {
               if (overviewNetwork) {
@@ -684,22 +700,19 @@ let ws;
             ovContainer._wmResizeObserver.observe(ovContainer);
           }
         } else {
+          overviewNetwork.setOptions(ovOptions);
           overviewNetwork.setData(ovData);
         }
-        // Always re-assert size after any data update — layout may have shifted
-        setTimeout(() => {
-          if (overviewNetwork) {
-            overviewNetwork.setSize('100%', '100%');
-            overviewNetwork.redraw();
-            overviewNetwork.fit({ animation: { duration: 350, easingFunction: 'easeInOutQuad' } });
-          }
-        }, 80);
-        setTimeout(() => {
-          if (overviewNetwork) {
-            overviewNetwork.setSize('100%', '100%');
-            overviewNetwork.redraw();
-          }
-        }, 600);
+        // Assert size at 3 checkpoints after data changes
+        [100, 400, 900].forEach(function(ms) {
+          setTimeout(function() {
+            if (overviewNetwork) {
+              overviewNetwork.setSize('100%', '100%');
+              overviewNetwork.redraw();
+              if (ms > 400) overviewNetwork.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+            }
+          }, ms);
+        });
       }
 
       // 2. Full Attack Surface Canvas (#graph-mount-point)
