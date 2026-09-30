@@ -386,6 +386,19 @@
       font-weight: 700;
       width: 140px;
       outline: none;
+      transition: all 0.15s ease;
+    }
+    .target-omni-input.readonly-target {
+      cursor: not-allowed;
+      user-select: none;
+      opacity: 0.9;
+    }
+    .target-omni-input:not(.readonly-target) {
+      cursor: text;
+      color: #38bdf8;
+    }
+    .target-omni-input:not(.readonly-target):focus {
+      color: #fff;
     }
     .target-omni-select {
       background: rgba(6, 10, 20, 0.9);
@@ -2093,9 +2106,10 @@
       </div>
 
       <!-- Center Dynamic Target Cockpit -->
-      <div class="target-omni-bar">
+      <div class="target-omni-bar" id="target-omni-container">
         <span class="target-omni-label">TARGET:</span>
-        <input type="text" id="target-url-input" class="target-omni-input" value="https://www.worldmonitor.app" placeholder="https://target-domain.com" />
+        <span id="target-lock-icon" style="color:var(--cyan); font-size:0.62rem; display:inline-flex; align-items:center;" title="Target locked to World Monitor Core">&#128274;</span>
+        <input type="text" id="target-url-input" class="target-omni-input readonly-target" value="https://www.worldmonitor.app" placeholder="https://target-domain.com" readonly title="World Monitor Core URL is fixed (select 'Custom Site URL' to edit target)" />
         <select id="target-preset-select" class="target-omni-select" onchange="applyTargetPreset(this.value)">
           <option value="https://www.worldmonitor.app">World Monitor Core</option>
           <option value="http://127.0.0.1:8000/target">Local Patch Sandbox</option>
@@ -2947,12 +2961,34 @@
 
     function applyTargetPreset(val) {
       const inp = document.getElementById('target-url-input');
-      if (val !== 'custom') {
-        inp.value = val;
-      } else {
-        inp.value = 'https://';
+      const lockIcon = document.getElementById('target-lock-icon');
+      if (!inp) return;
+
+      if (val === 'https://www.worldmonitor.app') {
+        // In World Monitor Core, user CANNOT change the URL
+        inp.value = 'https://www.worldmonitor.app';
+        inp.readOnly = true;
+        inp.classList.add('readonly-target');
+        inp.title = "Target locked to World Monitor Core. Select 'Custom Site URL' to edit.";
+        if (lockIcon) lockIcon.style.display = 'inline-flex';
+      } else if (val === 'custom') {
+        // Rest user CAN change the URL
+        inp.readOnly = false;
+        inp.classList.remove('readonly-target');
+        inp.title = "Editable target URL — enter any domain to test";
+        if (lockIcon) lockIcon.style.display = 'none';
+        if (inp.value === 'https://www.worldmonitor.app' || !inp.value) {
+          inp.value = 'https://';
+        }
         inp.focus();
         inp.select();
+      } else {
+        // Other presets (e.g. Local Patch Sandbox) - editable
+        inp.value = val;
+        inp.readOnly = false;
+        inp.classList.remove('readonly-target');
+        inp.title = "Editable target URL";
+        if (lockIcon) lockIcon.style.display = 'none';
       }
     }
 
@@ -3365,6 +3401,26 @@
     window.addEventListener('DOMContentLoaded', () => {
       checkAuthSession();
       initWebSocket();
+
+      // Initialize Target Input state (Locked on World Monitor Core, editable on custom)
+      const targetPresetSelect = document.getElementById('target-preset-select');
+      if (targetPresetSelect) {
+        applyTargetPreset(targetPresetSelect.value);
+      }
+      const targetInput = document.getElementById('target-url-input');
+      if (targetInput) {
+        targetInput.addEventListener('input', () => {
+          const select = document.getElementById('target-preset-select');
+          if (select) {
+            if (select.value === 'https://www.worldmonitor.app') {
+              targetInput.value = 'https://www.worldmonitor.app';
+            } else if (select.value !== 'custom' && targetInput.value !== 'http://127.0.0.1:8000/target') {
+              select.value = 'custom';
+            }
+          }
+        });
+      }
+
       fetch('/api/assessment/state').then(r => r.json()).then(d => {
         updateStats(d.stats);
         if (d.findings) renderFindings(d.findings);
