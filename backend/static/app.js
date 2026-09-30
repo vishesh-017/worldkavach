@@ -957,26 +957,24 @@ let ws;
       if (ovBadge) {
         if (count === 0) {
           ovBadge.innerText = '0 Exploits (Clean)';
-          ovBadge.style.cssText += ';background:rgba(16,185,129,0.15);color:#34d399;border-color:rgba(16,185,129,0.4)';
+          ovBadge.style.color = '#34d399';
         } else {
           ovBadge.innerText = count + ' Exploit' + (count > 1 ? 's' : '') + ' Found';
-          ovBadge.style.cssText += ';background:rgba(244,63,94,0.15);color:var(--rose);border-color:rgba(244,63,94,0.4)';
+          ovBadge.style.color = 'var(--rose)';
         }
       }
       var exploreTxt = document.getElementById('overview-explore-btn-text');
       if (exploreTxt) exploreTxt.innerHTML = 'Explore Full Vulnerabilities &amp; PoC Radar (' + count + ') &rarr;';
       var bannerTag = document.getElementById('banner-tag');
-      var bannerTxt = document.getElementById('banner-text');
-      if (bannerTag && bannerTxt) {
+      if (bannerTag) {
         if (count === 0) {
           bannerTag.innerText = 'TARGET POSTURE: CLEAN';
-          bannerTag.style.cssText += ';background:rgba(16,185,129,0.25);color:#34d399;border-color:rgba(16,185,129,0.5)';
-          bannerTxt.innerHTML = '<strong>Security Status:</strong> No active exploit vectors verified. DAST assessment complete.';
+          bannerTag.style.background = 'rgba(16,185,129,0.25)';
+          bannerTag.style.color = '#34d399';
         } else {
           bannerTag.innerText = 'ACTIVE EXPLOIT VECTOR';
-          bannerTag.style.cssText = '';
-          var topTitles = currentFindings.slice(0, 2).map(function(f){ return escapeHtml(f.title); }).join(' &amp; ');
-          bannerTxt.innerHTML = '<strong>Confirmed Exploits:</strong> ' + topTitles + (currentFindings.length > 2 ? ' &amp; ' + (currentFindings.length - 2) + ' more.' : '.');
+          bannerTag.style.background = 'var(--rose)';
+          bannerTag.style.color = '#fff';
         }
       }
       var ovList = document.getElementById('overview-findings-list');

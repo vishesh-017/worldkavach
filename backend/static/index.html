@@ -517,12 +517,7 @@
           
           <!-- Streamlined Tactical Alert Ribbon (Height: 34px) -->
           <div class="tactical-ribbon">
-            <div style="display:flex; align-items:center;">
-              <span class="ribbon-tag" id="banner-tag">ACTIVE EXPLOIT VECTOR</span>
-              <span class="ribbon-text" id="banner-text">
-                <strong>Confirmed Exploits:</strong> Initializing assessment telemetry...
-              </span>
-            </div>
+            <span class="ribbon-tag" id="banner-tag">ACTIVE EXPLOIT VECTOR</span>
             <button class="btn btn-emerald" style="padding:0.2rem 0.55rem; font-size:0.68rem;" onclick="navTo('sandbox', null)">
               Open Sandbox Patch Lab &rarr;
             </button>
@@ -684,7 +679,7 @@
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--rose)"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 16h2v2h-2zm0-6h2v4h-2z"/></svg>
                     <span>Confirmed Deliverables</span>
                   </div>
-                  <span class="tag-status confirmed" id="overview-findings-badge">0 Exploits Found</span>
+                  <span id="overview-findings-badge" style="font-family:var(--font-mono); font-size:0.88rem; font-weight:800; color:var(--rose); letter-spacing:0.02em;">0 Exploits Found</span>
                 </div>
 
                 <!-- Quick Deliverables Download Options (USP Download Bar) -->
