@@ -312,7 +312,7 @@ let ws;
         if (msg.stats) updateStats(msg.stats);
         if (msg.surface_map) {
           currentMapData = msg.surface_map;
-          renderNetwork(msg.surface_map);
+          renderNetwork(msg.surface_map, true);
         }
         if (msg.findings) {
           currentFindings = msg.findings;
@@ -437,6 +437,15 @@ let ws;
             overviewNetwork.redraw();
           }
         }, 300);
+
+        // Poll map size continuously during assessment to resist vis.js canvas shrink
+        var _mapPoll = setInterval(function() {
+          if (overviewNetwork) {
+            overviewNetwork.setSize('100%', '100%');
+            overviewNetwork.redraw();
+          }
+        }, 150);
+        setTimeout(function() { clearInterval(_mapPoll); }, 15000);
 
         ws.send(JSON.stringify({
           action: 'START_ASSESSMENT',
