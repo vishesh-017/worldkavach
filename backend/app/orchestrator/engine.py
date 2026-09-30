@@ -87,6 +87,32 @@ class AssessmentOrchestrator:
         self.stats.risk_medium = sum(1 for f in self.findings if f.severity == Severity.MEDIUM and f.status != FindingStatus.REJECTED)
         self.stats.risk_low = sum(1 for f in self.findings if f.severity == Severity.LOW and f.status != FindingStatus.REJECTED)
 
+        # Dynamic Risk Score Calculation (0 - 100)
+        unfixed_verified = [f for f in self.findings if f.status in [FindingStatus.VERIFIED, FindingStatus.FIX_PROPOSED]]
+        if not unfixed_verified:
+            if self.stats.retest_passed_count > 0:
+                self.stats.risk_score = 0
+                self.stats.posture_status = "VERIFIED SECURE"
+            elif self.stats.verified_count == 0:
+                self.stats.risk_score = 0
+                self.stats.posture_status = "MINIMAL RISK"
+            else:
+                self.stats.risk_score = 0
+                self.stats.posture_status = "HEALTHY"
+        else:
+            max_cvss = max(f.cvss_score for f in unfixed_verified)
+            # Base risk from highest CVSS + incremental delta for each verified exploit
+            calculated = round(max_cvss * 8.5 + (len(unfixed_verified) - 1) * 3.5)
+            self.stats.risk_score = min(100, max(10, calculated))
+            if self.stats.risk_score >= 80 or self.stats.risk_critical > 0:
+                self.stats.posture_status = "CRITICAL RISK"
+            elif self.stats.risk_score >= 60 or self.stats.risk_high > 0:
+                self.stats.posture_status = "HIGH RISK"
+            elif self.stats.risk_score >= 35 or self.stats.risk_medium > 0:
+                self.stats.posture_status = "MODERATE RISK"
+            else:
+                self.stats.posture_status = "LOW RISK"
+
     async def start_assessment(self, config: Optional[ScanConfig] = None):
         """
         Executes end-to-end security assessment lifecycle.

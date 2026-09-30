@@ -417,8 +417,11 @@ let ws;
           endpoints_discovered: 0,
           verified_count: 0,
           rejected_count: 0,
-          retest_passed_count: 0
+          retest_passed_count: 0,
+          risk_score: 0,
+          posture_status: 'ANALYZING...'
         });
+        updateDynamicRiskScore(0, 'ANALYZING...', 0);
         appendConsole('ORCHESTRATOR', `Triggering dynamic security assessment against: ${targetUrl}`);
         ws.send(JSON.stringify({
           action: 'START_ASSESSMENT',
@@ -459,10 +462,98 @@ let ws;
 
       const badge = document.getElementById('badge-findings');
       if (badge) badge.innerText = verified;
-      const radarSub = document.getElementById('radar-findings-sub');
-      if (radarSub) radarSub.innerText = `${verified} Verified Exploits`;
       const viewAllBtn = document.getElementById('overview-view-all-btn');
       if (viewAllBtn) viewAllBtn.innerText = `View All (${verified}) →`;
+
+      // Update Dynamic Risk Score & Posture Horizon
+      if (s.risk_score !== undefined) {
+        updateDynamicRiskScore(s.risk_score, s.posture_status, verified);
+      } else {
+        updateDynamicRiskScore(null, null, verified);
+      }
+    }
+
+    function updateDynamicRiskScore(score, statusText, verifiedCount) {
+      const scoreVal = document.getElementById('radar-score-val');
+      const scoreCircle = document.getElementById('radar-score-circle');
+      const statusEl = document.getElementById('radar-status-text');
+      const subEl = document.getElementById('radar-findings-sub');
+
+      // If score is undefined or null, compute dynamically from current findings
+      if (score === undefined || score === null) {
+        const unfixed = (currentFindings || []).filter(f => f.status === 'VERIFIED' || f.status === 'FIX_PROPOSED');
+        if (unfixed.length === 0) {
+          const retestPassed = (currentFindings || []).filter(f => f.status === 'RETEST_PASSED').length;
+          score = 0;
+          statusText = retestPassed > 0 ? 'VERIFIED SECURE' : (verifiedCount === 0 ? 'MINIMAL RISK' : 'HEALTHY');
+        } else {
+          const maxCvss = Math.max(...unfixed.map(f => f.cvss_score || 7.0));
+          score = Math.min(100, Math.max(10, Math.round(maxCvss * 8.5 + (unfixed.length - 1) * 3.5)));
+          const hasCrit = unfixed.some(f => f.severity === 'CRITICAL' || (f.cvss_score && f.cvss_score >= 9.0));
+          const hasHigh = unfixed.some(f => f.severity === 'HIGH' || (f.cvss_score && f.cvss_score >= 7.0));
+          if (score >= 80 || hasCrit) statusText = 'CRITICAL RISK';
+          else if (score >= 60 || hasHigh) statusText = 'HIGH RISK';
+          else if (score >= 35) statusText = 'MODERATE RISK';
+          else statusText = 'LOW RISK';
+        }
+      }
+
+      const numScore = Math.max(0, Math.min(100, Math.round(Number(score) || 0)));
+
+      // Animate score counter number smoothly
+      if (scoreVal) {
+        animateScoreNumber(scoreVal, numScore);
+      }
+
+      // Update circle stroke-dasharray and glowing gradient
+      if (scoreCircle) {
+        scoreCircle.setAttribute('stroke-dasharray', `${numScore}, 100`);
+        if (numScore >= 80) {
+          scoreCircle.setAttribute('stroke', 'url(#roseGrad)');
+        } else if (numScore >= 45) {
+          scoreCircle.setAttribute('stroke', 'url(#amberGrad)');
+        } else {
+          scoreCircle.setAttribute('stroke', 'url(#emeraldGrad)');
+        }
+      }
+
+      // Update Status text and color
+      if (statusEl) {
+        const finalStatus = statusText || (numScore >= 80 ? 'CRITICAL RISK' : (numScore >= 60 ? 'HIGH RISK' : (numScore >= 35 ? 'MODERATE RISK' : 'MINIMAL RISK')));
+        statusEl.innerText = finalStatus;
+        if (numScore >= 80) {
+          statusEl.style.color = 'var(--rose)';
+        } else if (numScore >= 45) {
+          statusEl.style.color = 'var(--amber)';
+        } else {
+          statusEl.style.color = 'var(--emerald)';
+        }
+      }
+
+      if (subEl && verifiedCount !== undefined) {
+        subEl.innerText = `${verifiedCount} Verified Exploits`;
+      }
+    }
+
+    function animateScoreNumber(element, target) {
+      const start = parseInt(element.innerText, 10) || 0;
+      if (start === target) return;
+      const duration = 500;
+      const startTime = performance.now();
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(start + (target - start) * ease);
+        element.innerText = current;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          element.innerText = target;
+        }
+      }
+      requestAnimationFrame(step);
     }
 
     function appendConsole(sender, msg, timeStr) {
@@ -823,6 +914,9 @@ let ws;
 
       const viewAllBtn = document.getElementById('overview-view-all-btn');
       if (viewAllBtn) viewAllBtn.innerText = `View All (${count}) →`;
+
+      // Synchronize dynamic risk score gauge & posture text
+      updateDynamicRiskScore(null, null, count);
 
       // Synchronize Executive Overview Live Deck
       const ovMount = document.getElementById('overview-findings-mount');

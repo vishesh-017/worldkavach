@@ -530,24 +530,32 @@
 
           <!-- Holographic Telemetry Horizon (Non-Bulky) -->
           <div class="telemetry-horizon">
-            <!-- Quantum Reticle Dial -->
+            <!-- Quantum Reticle Dial (Dynamic Risk Score & Posture Horizon) -->
             <div class="quantum-radar-pod">
               <div class="radar-svg-box">
                 <svg viewBox="0 0 36 36">
                   <path stroke="rgba(255,255,255,0.08)" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  <path stroke="url(#roseGrad)" stroke-width="3.5" stroke-dasharray="88, 100" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path id="radar-score-circle" stroke="url(#emeraldGrad)" stroke-width="3.5" stroke-dasharray="0, 100" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" style="transition: stroke-dasharray 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease;" />
                   <defs>
                     <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stop-color="#ff0055" />
                       <stop offset="100%" stop-color="#f59e0b" />
                     </linearGradient>
+                    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#f59e0b" />
+                      <stop offset="100%" stop-color="#eab308" />
+                    </linearGradient>
+                    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#10b981" />
+                      <stop offset="100%" stop-color="#00f0ff" />
+                    </linearGradient>
                   </defs>
                 </svg>
-                <div class="radar-score-num">88</div>
+                <div class="radar-score-num" id="radar-score-val">0</div>
               </div>
               <div class="radar-meta">
                 <div class="radar-label">Security Posture</div>
-                <div class="radar-status" id="radar-status-text">CRITICAL RISK</div>
+                <div class="radar-status" id="radar-status-text" style="color:var(--emerald);">MINIMAL RISK</div>
                 <div class="radar-sub" id="radar-findings-sub">0 Verified Exploits</div>
               </div>
             </div>

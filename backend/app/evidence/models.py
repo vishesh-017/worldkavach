@@ -140,6 +140,8 @@ class AssessmentStats(BaseModel):
     risk_high: int = 0
     risk_medium: int = 0
     risk_low: int = 0
+    risk_score: int = 0
+    posture_status: str = "MINIMAL RISK"
 
 
 class ScanConfig(BaseModel):
