@@ -7,12 +7,19 @@ Fully covers enterprise DAST audit deliverables.
 import os
 import json
 import io
+import html
 from typing import List, Dict, Any
 from ..evidence.models import Finding, AssessmentStats, Endpoint
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Preformatted, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
+
+
+def _clean_pdf_text(val: Any) -> str:
+    if val is None:
+        return ""
+    return html.escape(str(val), quote=False)
 
 
 class ReportGenerator:
@@ -247,10 +254,10 @@ class ReportGenerator:
 </body>
 </html>"""
         return html
-
+ 
     @classmethod
     def generate_pdf_report(cls, findings: List[Finding], stats: AssessmentStats, target: str) -> bytes:
-        """Generates a professional PDF report using ReportLab."""
+        """Generates a professional PDF report using ReportLab with strict XML escaping."""
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40)
         styles = getSampleStyleSheet()
@@ -300,8 +307,9 @@ class ReportGenerator:
         )
 
         elements = []
+        safe_target = _clean_pdf_text(target)
         elements.append(Paragraph("WorldKavach Autonomous DAST Security Report", title_style))
-        elements.append(Paragraph(f"Target: {target} — Architecture: Evidence-First Agentic DAST", subtitle_style))
+        elements.append(Paragraph(f"Target: {safe_target} &mdash; Architecture: Evidence-First Agentic DAST", subtitle_style))
         elements.append(Spacer(1, 10))
 
         # Stats Table
@@ -324,20 +332,50 @@ class ReportGenerator:
         elements.append(t)
         elements.append(Spacer(1, 15))
 
-        for idx, f in enumerate(findings, 1):
-            elements.append(Paragraph(f"<b>Finding {idx}: {f.title}</b>", heading2_style))
-            elements.append(Paragraph(f"<b>Severity:</b> {f.severity.value} (CVSS: {f.cvss_score}) | <b>Component:</b> {f.affected_component} | <b>Status:</b> {f.status.value}", body_style))
-            elements.append(Spacer(1, 4))
-            elements.append(Paragraph(f"<b>Description:</b> {f.description}", body_style))
-            elements.append(Spacer(1, 4))
-            elements.append(Paragraph(f"<b>Controlled Proof of Concept:</b>", body_style))
-            elements.append(Preformatted(f.poc_code[:300], code_style))
-            elements.append(Spacer(1, 4))
-            elements.append(Paragraph(f"<b>Business Impact:</b> {f.business_impact}", body_style))
-            elements.append(Spacer(1, 4))
-            elements.append(Paragraph(f"<b>Remediation:</b> {f.remediation_recommendations}", body_style))
+        if not findings:
+            elements.append(Paragraph("No verified vulnerabilities detected for this target scope.", body_style))
             elements.append(Spacer(1, 10))
+        else:
+            for idx, f in enumerate(findings, 1):
+                title = _clean_pdf_text(f.title)
+                sev = _clean_pdf_text(f.severity.value if hasattr(f.severity, 'value') else f.severity)
+                comp = _clean_pdf_text(f.affected_component)
+                stat = _clean_pdf_text(f.status.value if hasattr(f.status, 'value') else f.status)
+                desc = _clean_pdf_text(f.description)
+                impact = _clean_pdf_text(f.business_impact)
+                remed = _clean_pdf_text(f.remediation_recommendations)
+                poc = str(f.poc_code or "")[:350]
 
-        doc.build(elements)
+                elements.append(Paragraph(f"<b>Finding {idx}: {title}</b>", heading2_style))
+                elements.append(Paragraph(f"<b>Severity:</b> {sev} (CVSS: {f.cvss_score}) | <b>Component:</b> {comp} | <b>Status:</b> {stat}", body_style))
+                elements.append(Spacer(1, 4))
+                elements.append(Paragraph(f"<b>Description:</b> {desc}", body_style))
+                elements.append(Spacer(1, 4))
+                if poc:
+                    elements.append(Paragraph("<b>Controlled Proof of Concept:</b>", body_style))
+                    elements.append(Preformatted(poc, code_style))
+                    elements.append(Spacer(1, 4))
+                elements.append(Paragraph(f"<b>Business Impact:</b> {impact}", body_style))
+                elements.append(Spacer(1, 4))
+                elements.append(Paragraph(f"<b>Remediation:</b> {remed}", body_style))
+                elements.append(Spacer(1, 10))
+
+        try:
+            doc.build(elements)
+        except Exception:
+            # Fallback document in case of any unexpected platypus formatting error
+            fallback_buffer = io.BytesIO()
+            fdoc = SimpleDocTemplate(fallback_buffer, pagesize=letter)
+            felements = [
+                Paragraph("WorldKavach Security Assessment Summary", title_style),
+                Paragraph(f"Target: {safe_target}", subtitle_style),
+                t,
+                Spacer(1, 15),
+                Paragraph(f"Audit completed with {len(findings)} findings recorded. Full details available in JSON/Markdown exports.", body_style)
+            ]
+            fdoc.build(felements)
+            fallback_buffer.seek(0)
+            return fallback_buffer.getvalue()
+
         buffer.seek(0)
         return buffer.getvalue()

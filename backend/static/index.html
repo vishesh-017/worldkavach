@@ -360,10 +360,10 @@
     .target-omni-bar {
       display: flex;
       align-items: center;
-      gap: 0.3rem;
-      background: rgba(13, 21, 38, 0.75);
+      gap: 0.35rem;
+      background: rgba(13, 21, 38, 0.85);
       border: 1px solid var(--border-subtle);
-      padding: 0.18rem 0.45rem;
+      padding: 0.2rem 0.5rem;
       border-radius: 6px;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
@@ -378,21 +378,43 @@
       font-family: var(--font-mono);
       letter-spacing: 0.05em;
     }
+    .target-protocol-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--cyan);
+      background: rgba(0, 240, 255, 0.09);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      padding: 0.08rem 0.35rem;
+      border-radius: 4px;
+      user-select: none;
+      pointer-events: none;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      letter-spacing: 0.02em;
+    }
     .target-omni-input {
       background: transparent;
       border: none;
-      color: var(--cyan);
+      color: #38bdf8;
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      width: 140px;
+      width: 155px;
       outline: none;
       transition: all 0.15s ease;
+      padding: 0.05rem 0.2rem;
+    }
+    .target-omni-input::placeholder {
+      color: rgba(148, 163, 184, 0.45);
+      font-weight: 500;
     }
     .target-omni-input.readonly-target {
       cursor: not-allowed;
       user-select: none;
-      opacity: 0.9;
+      color: var(--cyan);
+      opacity: 0.95;
     }
     .target-omni-input:not(.readonly-target) {
       cursor: text;
@@ -952,6 +974,162 @@
     .node-drawer.open { right: 0; }
     .drawer-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
     .drawer-title { font-weight: 800; font-size: 0.88rem; color: #fff; }
+
+    /* Live DAST Probe Button & Real-time HUD */
+    .btn-live-probe {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.22) 0%, rgba(2, 132, 199, 0.38) 100%);
+      border: 1.5px solid var(--cyan);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.76rem;
+      padding: 0.48rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      width: 100%;
+      letter-spacing: 0.03em;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.25);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-live-probe:hover:not(:disabled) {
+      background: linear-gradient(135deg, #00f0ff 0%, #0284c7 100%);
+      color: #040814;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
+      transform: translateY(-1px);
+    }
+    .btn-live-probe:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+    .btn-live-probe:disabled {
+      opacity: 0.75;
+      cursor: wait;
+      border-color: rgba(0, 240, 255, 0.5);
+    }
+
+    .live-probe-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #00f0ff;
+      border-radius: 50%;
+      animation: spinProbe 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spinProbe {
+      to { transform: rotate(360deg); }
+    }
+
+    .probe-result-card {
+      background: rgba(4, 9, 22, 0.95);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      animation: probeFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes probeFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .probe-status-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .probe-code-badge {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.72rem;
+      padding: 0.18rem 0.5rem;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .probe-code-badge.code-2xx {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+    .probe-code-badge.code-4xx {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+    .probe-code-badge.code-5xx {
+      background: rgba(255, 0, 85, 0.18);
+      color: #ff85a2;
+      border: 1px solid rgba(255, 0, 85, 0.45);
+      box-shadow: 0 0 10px rgba(255, 0, 85, 0.2);
+    }
+    .probe-latency-pill {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--cyan);
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+    }
+
+    .header-audit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.3rem;
+    }
+    .header-audit-item {
+      font-size: 0.58rem;
+      font-family: var(--font-mono);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--border-subtle);
+    }
+    .header-audit-item.pass {
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+    .header-audit-item.fail {
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+
+    .probe-tabs {
+      display: flex;
+      gap: 0.3rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.25rem;
+      margin-top: 0.15rem;
+    }
+    .probe-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dark);
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+    .probe-tab-btn.active {
+      color: var(--cyan);
+      background: rgba(0, 240, 255, 0.12);
+    }
 
     /* ==========================================================================
        VULNERABILITIES (CLEAN DUAL-COLUMN GRID)
@@ -2122,19 +2300,19 @@
     <div class="sidebar-downloads-section">
       <div class="menu-heading" style="padding:0.2rem 0.1rem 0.35rem 0.1rem;">Quick Deliverables</div>
       <div class="sidebar-dl-container">
-        <a href="/api/assessment/report/pdf" download class="sidebar-dl-btn" title="Download Executive PDF Audit Report">
+        <a href="/api/assessment/report/pdf" download="worldkavach_security_report.pdf" class="sidebar-dl-btn" title="Download Executive PDF Audit Report">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           <span>PDF</span>
         </a>
-        <a href="/api/assessment/report/csv" download class="sidebar-dl-btn" title="Download Findings CSV Ledger">
+        <a href="/api/assessment/report/csv" download="worldkavach_findings.csv" class="sidebar-dl-btn" title="Download Findings CSV Ledger">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           <span>CSV</span>
         </a>
-        <a href="/api/assessment/report/json" download class="sidebar-dl-btn" title="Download Complete JSON Deliverable">
+        <a href="/api/assessment/report/json" download="worldkavach_deliverables.json" class="sidebar-dl-btn" title="Download Complete JSON Deliverable">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           <span>JSON</span>
         </a>
-        <a href="/api/assessment/report/markdown" download class="sidebar-dl-btn" title="Download Markdown Audit Report">
+        <a href="/api/assessment/report/markdown" download="worldkavach_security_report.md" class="sidebar-dl-btn" title="Download Markdown Audit Report">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           <span>MD</span>
         </a>
@@ -2177,7 +2355,8 @@
       <div class="target-omni-bar" id="target-omni-container">
         <span class="target-omni-label">TARGET:</span>
         <span id="target-lock-icon" style="color:var(--cyan); font-size:0.62rem; display:inline-flex; align-items:center;" title="Target locked to World Monitor Core">&#128274;</span>
-        <input type="text" id="target-url-input" class="target-omni-input readonly-target" value="https://www.worldmonitor.app" placeholder="https://target-domain.com" readonly title="World Monitor Core URL is fixed (select 'Custom Site URL' to edit target)" />
+        <span id="target-protocol-badge" class="target-protocol-badge" title="Locked Protocol (Auto-selected)">https://</span>
+        <input type="text" id="target-url-input" class="target-omni-input readonly-target" value="www.worldmonitor.app" placeholder="google.com" readonly title="World Monitor Core URL is fixed (select 'Custom Site URL' to edit target)" autocomplete="off" spellcheck="false" />
         <select id="target-preset-select" class="target-omni-select" onchange="applyTargetPreset(this.value)">
           <option value="https://www.worldmonitor.app">World Monitor Core</option>
           <option value="http://127.0.0.1:8000/target">Local Patch Sandbox</option>
@@ -2607,11 +2786,18 @@
             </div>
 
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-              <a href="/api/assessment/report/json" download class="btn btn-glow" style="padding:0.55rem 1.15rem;">
+              <a href="/api/assessment/report/pdf" download="worldkavach_security_report.pdf" class="btn btn-glow" style="padding:0.55rem 1.15rem; background:linear-gradient(135deg, rgba(0, 240, 255, 0.25) 0%, rgba(2, 132, 199, 0.4) 100%); border-color:var(--cyan); color:#ffffff; font-weight:700;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle; margin-right:4px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Download Executive PDF Audit Report (.pdf)
+              </a>
+              <a href="/api/assessment/report/json" download="worldkavach_deliverables.json" class="btn" style="padding:0.55rem 1.15rem;">
                 &#128190; Download Complete JSON Deliverable
               </a>
-              <a href="/api/assessment/report/markdown" download class="btn" style="padding:0.55rem 1.15rem;">
+              <a href="/api/assessment/report/markdown" download="worldkavach_security_report.md" class="btn" style="padding:0.55rem 1.15rem;">
                 &#128196; Download Full Markdown Report (.md)
+              </a>
+              <a href="/api/assessment/report/csv" download="worldkavach_findings.csv" class="btn" style="padding:0.55rem 1.15rem;">
+                &#128202; Download CSV Findings Ledger (.csv)
               </a>
             </div>
 
@@ -2661,17 +2847,14 @@
           <p id="drawer-desc" style="font-size:0.72rem; color:var(--text-muted); line-height:1.45; margin-top:0.2rem;"></p>
         </div>
 
-        <div style="margin-top:0.4rem; padding-top:0.65rem; border-top:1px solid var(--border-subtle);">
-          <button class="btn btn-glow" style="width:100%; justify-content:center;" onclick="sendLiveProbeCurrent()">
-            &#9889; Send Live HTTP DAST Probe
+        <div style="margin-top:0.45rem; padding-top:0.65rem; border-top:1px solid var(--border-subtle);">
+          <button id="btn-run-live-probe" class="btn-live-probe" onclick="sendLiveProbeCurrent()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+            <span>Send Live HTTP DAST Probe</span>
           </button>
         </div>
 
-        <div id="drawer-probe-results" style="display:none; margin-top:0.4rem;">
-          <div style="font-size:0.62rem; color:var(--emerald); font-family:var(--font-mono); font-weight:700; margin-bottom:0.2rem;">Live Response Trace</div>
-          <div id="probe-status-line" style="font-family:var(--font-mono); font-size:0.7rem; color:#fff; margin-bottom:0.25rem;"></div>
-          <div class="box-code" id="probe-headers" style="max-height:160px; font-size:0.65rem;"></div>
-        </div>
+        <div id="drawer-probe-results" style="display:none; margin-top:0.55rem;"></div>
       </div>
   </main>
 </div> <!-- /#workspace-view -->
@@ -3063,35 +3246,63 @@
       }
     }
 
+    function getFullTargetUrl() {
+      const protoBadge = document.getElementById('target-protocol-badge');
+      const inp = document.getElementById('target-url-input');
+      const proto = protoBadge ? protoBadge.innerText.trim() : 'https://';
+      let host = inp ? inp.value.trim() : 'www.worldmonitor.app';
+      if (!host) host = 'www.worldmonitor.app';
+      if (host.startsWith('https://') || host.startsWith('http://')) {
+        return host;
+      }
+      return `${proto}${host}`;
+    }
+
     function applyTargetPreset(val) {
       const inp = document.getElementById('target-url-input');
+      const protoBadge = document.getElementById('target-protocol-badge');
       const lockIcon = document.getElementById('target-lock-icon');
       if (!inp) return;
 
       if (val === 'https://www.worldmonitor.app') {
         // In World Monitor Core, user CANNOT change the URL
-        inp.value = 'https://www.worldmonitor.app';
+        if (protoBadge) protoBadge.innerText = 'https://';
+        inp.value = 'www.worldmonitor.app';
+        inp.placeholder = 'www.worldmonitor.app';
         inp.readOnly = true;
         inp.classList.add('readonly-target');
         inp.title = "Target locked to World Monitor Core. Select 'Custom Site URL' to edit.";
         if (lockIcon) lockIcon.style.display = 'inline-flex';
       } else if (val === 'custom') {
         // Rest user CAN change the URL
+        if (protoBadge) protoBadge.innerText = 'https://';
         inp.readOnly = false;
         inp.classList.remove('readonly-target');
-        inp.title = "Editable target URL — enter any domain to test";
+        inp.placeholder = 'google.com';
+        inp.title = "Enter domain directly (e.g. google.com)";
         if (lockIcon) lockIcon.style.display = 'none';
-        if (inp.value === 'https://www.worldmonitor.app' || !inp.value) {
-          inp.value = 'https://';
+        if (inp.value === 'www.worldmonitor.app' || inp.value === '127.0.0.1:8000/target') {
+          inp.value = '';
         }
         inp.focus();
-        inp.select();
-      } else {
-        // Other presets (e.g. Local Patch Sandbox) - editable
-        inp.value = val;
+      } else if (val === 'http://127.0.0.1:8000/target') {
+        if (protoBadge) protoBadge.innerText = 'http://';
+        inp.value = '127.0.0.1:8000/target';
         inp.readOnly = false;
         inp.classList.remove('readonly-target');
-        inp.title = "Editable target URL";
+        inp.title = "Local Patch Sandbox Target";
+        if (lockIcon) lockIcon.style.display = 'none';
+      } else {
+        if (val.startsWith('http://')) {
+          if (protoBadge) protoBadge.innerText = 'http://';
+          inp.value = val.replace(/^http:\/\//, '');
+        } else {
+          if (protoBadge) protoBadge.innerText = 'https://';
+          inp.value = val.replace(/^https:\/\//, '');
+        }
+        inp.readOnly = false;
+        inp.classList.remove('readonly-target');
+        inp.title = "Custom Target Domain";
         if (lockIcon) lockIcon.style.display = 'none';
       }
     }
@@ -3101,8 +3312,7 @@
         openAuthModal();
         return;
       }
-      const targetInput = document.getElementById('target-url-input');
-      const targetUrl = (targetInput ? targetInput.value.trim() : '') || 'https://www.worldmonitor.app';
+      const targetUrl = getFullTargetUrl();
       const isBenchmark = targetUrl.includes('worldmonitor') || targetUrl.includes('127.0.0.1') || targetUrl.includes('localhost');
 
       if (ws && ws.readyState === WebSocket.OPEN) {
@@ -3316,7 +3526,16 @@
       document.getElementById('drawer-path').innerText = node.details.path || node.label;
       document.getElementById('drawer-class').innerText = node.classification || node.type.toUpperCase();
       document.getElementById('drawer-desc').innerText = node.details.description || 'Discovered endpoint in attack surface catalog.';
-      document.getElementById('drawer-probe-results').style.display = 'none';
+      const probeRes = document.getElementById('drawer-probe-results');
+      if (probeRes) {
+        probeRes.innerHTML = '';
+        probeRes.style.display = 'none';
+      }
+      const probeBtn = document.getElementById('btn-run-live-probe');
+      if (probeBtn) {
+        probeBtn.disabled = false;
+        probeBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg> <span>Send Live HTTP DAST Probe</span>';
+      }
       document.getElementById('node-drawer').classList.add('open');
     }
 
@@ -3328,6 +3547,13 @@
       if (!activeDrawerNode) return;
       const path = activeDrawerNode.details.path || activeDrawerNode.label.split(' ')[1] || '/';
       const method = activeDrawerNode.details.method || 'GET';
+      const probeBtn = document.getElementById('btn-run-live-probe');
+      const probeRes = document.getElementById('drawer-probe-results');
+
+      if (probeBtn) {
+        probeBtn.disabled = true;
+        probeBtn.innerHTML = '<span class="live-probe-spinner"></span> <span>Probing Live Wire...</span>';
+      }
 
       try {
         const resp = await fetch('/api/assessment/probe-endpoint', {
@@ -3336,13 +3562,130 @@
           body: JSON.stringify({ path, method })
         });
         const data = await resp.json();
-        document.getElementById('drawer-probe-results').style.display = 'block';
-        document.getElementById('probe-status-line').innerText = `HTTP ${data.status_code} (${data.duration_ms} ms)`;
-        document.getElementById('probe-headers').innerText = JSON.stringify(data.headers, null, 2);
-        appendConsole('PROBE', `Live probe completed for ${path}: HTTP ${data.status_code} in ${data.duration_ms}ms`);
+
+        if (probeRes) {
+          probeRes.style.display = 'block';
+
+          let codeClass = 'code-2xx';
+          let statusText = 'OK';
+          if (data.status_code >= 400 && data.status_code < 500) {
+            codeClass = 'code-4xx';
+            statusText = data.status_code === 404 ? 'NOT FOUND' : (data.status_code === 401 ? 'UNAUTHORIZED' : (data.status_code === 403 ? 'FORBIDDEN' : 'CLIENT ERROR'));
+          } else if (data.status_code >= 500) {
+            codeClass = 'code-5xx';
+            statusText = 'SERVER ERROR';
+          }
+
+          const audit = data.security_audit || {};
+          const cspPass = audit.content_security_policy === true;
+          const hstsPass = audit.strict_transport_security === true;
+          const xfoPass = audit.x_frame_options === true;
+          const xctoPass = audit.x_content_type_options === true;
+
+          const rawHeaders = data.headers ? JSON.stringify(data.headers, null, 2) : '{}';
+          const curlCmd = `curl -i -X ${method} "http://127.0.0.1:8000${path}"`;
+
+          probeRes.innerHTML = `
+            <div class="probe-result-card">
+              <!-- Status Header Strip -->
+              <div class="probe-status-strip">
+                <span class="probe-code-badge ${codeClass}">
+                  <span style="font-size:0.6rem;">&#9679;</span> HTTP ${data.status_code} ${statusText}
+                </span>
+                <span class="probe-latency-pill">&#9889; ${data.duration_ms} ms</span>
+              </div>
+
+              <!-- Security Headers Quick Audit Matrix -->
+              <div style="font-size:0.58rem; color:var(--text-dark); text-transform:uppercase; font-family:var(--font-mono); font-weight:700; margin-top:0.15rem;">
+                Header Security Posture
+              </div>
+              <div class="header-audit-grid">
+                <div class="header-audit-item ${cspPass ? 'pass' : 'fail'}">
+                  <span>CSP</span>
+                  <span>${cspPass ? '&#10003; ENFORCED' : '&#10007; MISSING'}</span>
+                </div>
+                <div class="header-audit-item ${hstsPass ? 'pass' : 'fail'}">
+                  <span>HSTS</span>
+                  <span>${hstsPass ? '&#10003; SECURE' : '&#10007; NONE'}</span>
+                </div>
+                <div class="header-audit-item ${xfoPass ? 'pass' : 'fail'}">
+                  <span>X-FRAME</span>
+                  <span>${xfoPass ? '&#10003; PROTECTED' : '&#10007; NONE'}</span>
+                </div>
+                <div class="header-audit-item ${xctoPass ? 'pass' : 'fail'}">
+                  <span>NOSNIFF</span>
+                  <span>${xctoPass ? '&#10003; ENABLED' : '&#10007; NONE'}</span>
+                </div>
+              </div>
+
+              <!-- Switchable Tabs: Headers / Body / cURL -->
+              <div class="probe-tabs">
+                <button type="button" class="probe-tab-btn active" onclick="switchProbeTab(this, 'probe-tab-headers')">Headers</button>
+                <button type="button" class="probe-tab-btn" onclick="switchProbeTab(this, 'probe-tab-body')">Body Preview</button>
+                <button type="button" class="probe-tab-btn" onclick="switchProbeTab(this, 'probe-tab-curl')">cURL Replay</button>
+              </div>
+
+              <div id="probe-tab-headers" class="probe-tab-content">
+                <div class="box-code" style="max-height:140px; font-size:0.62rem; margin:0; line-height:1.35; color:#93c5fd;">${escapeHtml(rawHeaders)}</div>
+              </div>
+
+              <div id="probe-tab-body" class="probe-tab-content" style="display:none;">
+                <div class="box-code" style="max-height:140px; font-size:0.62rem; margin:0; line-height:1.35; color:#e2e8f0; white-space:pre-wrap;">${escapeHtml(data.body_preview || '(Empty response body)')}</div>
+              </div>
+
+              <div id="probe-tab-curl" class="probe-tab-content" style="display:none;">
+                <div class="box-code" style="font-size:0.62rem; margin:0; color:#38bdf8; word-break:break-all;">${escapeHtml(curlCmd)}</div>
+                <button type="button" class="btn" style="margin-top:0.35rem; width:100%; font-size:0.65rem; padding:0.25rem;" onclick="copyProbeCurl(this, '${escapeHtml(curlCmd)}')">
+                  &#128203; Copy cURL Command
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
+        appendConsole('PROBE', `Live HTTP probe for ${method} ${path}: HTTP ${data.status_code} in ${data.duration_ms}ms`);
       } catch (err) {
         appendConsole('PROBE', `Probe error: ${err}`);
+        if (probeRes) {
+          probeRes.style.display = 'block';
+          probeRes.innerHTML = `
+            <div class="probe-result-card" style="border-color:rgba(255,0,85,0.4);">
+              <span class="probe-code-badge code-5xx">&#9679; Probe Failed</span>
+              <div style="font-size:0.68rem; color:#f87171; margin-top:0.2rem;">${escapeHtml(err.message || String(err))}</div>
+            </div>
+          `;
+        }
+      } finally {
+        if (probeBtn) {
+          probeBtn.disabled = false;
+          probeBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg> <span>Re-probe Live Wire</span>';
+        }
       }
+    }
+
+    function switchProbeTab(btn, tabId) {
+      document.querySelectorAll('.probe-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.probe-tab-content').forEach(c => c.style.display = 'none');
+      btn.classList.add('active');
+      const target = document.getElementById(tabId);
+      if (target) target.style.display = 'block';
+    }
+
+    function copyProbeCurl(btn, cmd) {
+      navigator.clipboard.writeText(cmd).then(() => {
+        const orig = btn.innerText;
+        btn.innerText = '✓ Copied to Clipboard!';
+        btn.style.borderColor = 'var(--emerald)';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 1800);
+      }).catch(() => {
+        btn.innerText = 'Copied!';
+        setTimeout(() => { btn.innerText = orig; }, 1800);
+      });
     }
 
     function filterGraph(category) {
@@ -3549,13 +3892,27 @@
         applyTargetPreset(targetPresetSelect.value);
       }
       const targetInput = document.getElementById('target-url-input');
+      const protoBadge = document.getElementById('target-protocol-badge');
       if (targetInput) {
         targetInput.addEventListener('input', () => {
           const select = document.getElementById('target-preset-select');
+          let val = targetInput.value;
+
+          // If user pastes or types a full URL with scheme, auto-strip the scheme and set badge
+          if (val.startsWith('https://')) {
+            if (protoBadge) protoBadge.innerText = 'https://';
+            val = val.substring(8);
+            targetInput.value = val;
+          } else if (val.startsWith('http://')) {
+            if (protoBadge) protoBadge.innerText = 'http://';
+            val = val.substring(7);
+            targetInput.value = val;
+          }
+
           if (select) {
             if (select.value === 'https://www.worldmonitor.app') {
-              targetInput.value = 'https://www.worldmonitor.app';
-            } else if (select.value !== 'custom' && targetInput.value !== 'http://127.0.0.1:8000/target') {
+              targetInput.value = 'www.worldmonitor.app';
+            } else if (select.value !== 'custom' && val !== '127.0.0.1:8000/target') {
               select.value = 'custom';
             }
           }

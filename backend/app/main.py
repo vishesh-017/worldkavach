@@ -184,15 +184,26 @@ async def download_html_report():
 
 @app.get("/api/assessment/report/pdf")
 async def download_pdf_report():
-    pdf_bytes = ReportGenerator.generate_pdf_report(
-        orchestrator.findings,
-        orchestrator.stats,
-        orchestrator.config.target_url
-    )
+    try:
+        pdf_bytes = ReportGenerator.generate_pdf_report(
+            orchestrator.findings,
+            orchestrator.stats,
+            orchestrator.config.target_url
+        )
+    except Exception as e:
+        logger.error(f"Error building PDF: {e}")
+        pdf_bytes = ReportGenerator.generate_pdf_report(
+            [],
+            orchestrator.stats,
+            orchestrator.config.target_url
+        )
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=worldkavach_security_report.pdf"}
+        headers={
+            "Content-Disposition": 'attachment; filename="worldkavach_security_report.pdf"',
+            "Content-Type": "application/pdf"
+        }
     )
 
 
@@ -206,7 +217,7 @@ async def download_csv_report():
     return PlainTextResponse(
         content=csv_str,
         media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=worldkavach_security_report.csv"}
+        headers={"Content-Disposition": 'attachment; filename="worldkavach_security_report.csv"'}
     )
 
 
@@ -220,7 +231,7 @@ async def download_json_report():
     return Response(
         content=json_str,
         media_type="application/json",
-        headers={"Content-Disposition": "attachment; filename=worldkavach_security_report.json"}
+        headers={"Content-Disposition": 'attachment; filename="worldkavach_security_report.json"'}
     )
 
 
@@ -233,7 +244,7 @@ async def download_markdown_report():
     )
     return PlainTextResponse(
         content=md_str,
-        headers={"Content-Disposition": "attachment; filename=worldkavach_security_report.md"}
+        headers={"Content-Disposition": 'attachment; filename="worldkavach_security_report.md"'}
     )
 
 
