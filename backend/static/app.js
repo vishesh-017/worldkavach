@@ -312,7 +312,7 @@ let ws;
         if (msg.stats) updateStats(msg.stats);
         if (msg.surface_map) {
           currentMapData = msg.surface_map;
-          renderNetwork(msg.surface_map, true);
+          renderNetwork(msg.surface_map, false);
         }
         if (msg.findings) {
           currentFindings = msg.findings;
@@ -672,7 +672,19 @@ let ws;
           interaction: { hover: true, tooltipDelay: 100, zoomView: true, dragView: true }
         };
         if (!overviewNetwork) {
+          // Pin container to current pixel size BEFORE vis.js reads it
+          // Prevents surrounding layout reflow from giving vis.js a wrong canvas height
+          var _pinH = ovContainer.clientHeight || 600;
+          var _pinW = ovContainer.clientWidth || 900;
+          ovContainer.style.height = _pinH + 'px';
+          ovContainer.style.width = _pinW + 'px';
           overviewNetwork = new vis.Network(ovContainer, ovData, ovOptions);
+          // Reset to percentage after vis.js canvas is initialized
+          setTimeout(function() {
+            ovContainer.style.height = '100%';
+            ovContainer.style.width = '100%';
+            if (overviewNetwork) { overviewNetwork.setSize('100%', '100%'); overviewNetwork.redraw(); }
+          }, 30);
           overviewNetwork.on('click', (params) => {
             if (params.nodes.length > 0) {
               const nodeId = params.nodes[0];
