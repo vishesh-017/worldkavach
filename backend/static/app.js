@@ -423,6 +423,21 @@ let ws;
         });
         updateDynamicRiskScore(0, 'ANALYZING...', 0);
         appendConsole('ORCHESTRATOR', `Triggering dynamic security assessment against: ${targetUrl}`);
+
+        // Re-assert map size after DOM updates from reset — prevents canvas shrink
+        setTimeout(function() {
+          if (overviewNetwork) {
+            overviewNetwork.setSize('100%', '100%');
+            overviewNetwork.redraw();
+          }
+        }, 50);
+        setTimeout(function() {
+          if (overviewNetwork) {
+            overviewNetwork.setSize('100%', '100%');
+            overviewNetwork.redraw();
+          }
+        }, 300);
+
         ws.send(JSON.stringify({
           action: 'START_ASSESSMENT',
           config: {
@@ -645,18 +660,37 @@ let ws;
             }
           });
           overviewNetwork.once('stabilizationIterationsDone', () => {
+            overviewNetwork.setSize('100%', '100%');
+            overviewNetwork.redraw();
             overviewNetwork.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
           });
+          // Attach ResizeObserver so the canvas always fills its container
+          if (window.ResizeObserver && !ovContainer._wmResizeObserver) {
+            ovContainer._wmResizeObserver = new ResizeObserver(function() {
+              if (overviewNetwork) {
+                overviewNetwork.setSize('100%', '100%');
+                overviewNetwork.redraw();
+              }
+            });
+            ovContainer._wmResizeObserver.observe(ovContainer);
+          }
         } else {
           overviewNetwork.setData(ovData);
         }
+        // Always re-assert size after any data update — layout may have shifted
         setTimeout(() => {
           if (overviewNetwork) {
             overviewNetwork.setSize('100%', '100%');
             overviewNetwork.redraw();
-            overviewNetwork.fit();
+            overviewNetwork.fit({ animation: { duration: 350, easingFunction: 'easeInOutQuad' } });
           }
-        }, 50);
+        }, 80);
+        setTimeout(() => {
+          if (overviewNetwork) {
+            overviewNetwork.setSize('100%', '100%');
+            overviewNetwork.redraw();
+          }
+        }, 600);
       }
 
       // 2. Full Attack Surface Canvas (#graph-mount-point)
