@@ -3,6 +3,7 @@
 <div align="center">
 
 ![WorldKavach Banner](https://img.shields.io/badge/WorldKavach-Autonomous%20DAST%20Platform-00f0ff?style=for-the-badge&logo=shield&logoColor=06080e)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary%20%7C%20All%20Rights%20Reserved-red?style=for-the-badge&logo=lock&logoColor=white)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Architecture: Evidence--First DAST](https://img.shields.io/badge/Architecture-Evidence--First%20DAST-10b981?style=for-the-badge)](#system-architecture)
@@ -294,7 +295,16 @@ WorldKavach supports RBAC clearance tiers:
 
 ---
 
-## 📄 License & Attribution
+## 🔒 License & Intellectual Property Rights
 
-WorldKavach is open-sourced under the **Apache 2.0 License**.  
-Developed for high-assurance autonomous security auditing, continuous vulnerability management, and automated cyber defense.
+**PROPRIETARY AND CONFIDENTIAL — ALL RIGHTS RESERVED.**  
+Copyright &copy; 2026 Vishesh (@vishesh-017) &amp; WorldKavach Contributors.
+
+This software, its source code, architecture, multi-agent AI triage algorithms, deterministic DAST replay engine, and Command HUD interface are proprietary and protected under international copyright and intellectual property laws.
+
+* **❌ No Copying**: Reproduction, scraping, extraction, or distribution in any form is strictly prohibited.
+* **❌ No Forking or Derivatives**: Creating public or private forks, mirrors, or derivative works is unauthorized and constitutes willful copyright infringement.
+* **❌ No Redistribution or Cloning**: Hosting, sublicensing, or mirroring this codebase on any public or private platform is forbidden.
+* **❌ No AI Model Training Ingestion**: Using this codebase for training or fine-tuning machine learning models without express written permission is prohibited.
+
+For complete legal terms and conditions, consult the official [LICENSE](LICENSE) file. Unauthorized use, cloning, or distribution will be met with immediate DMCA takedown notices and legal enforcement.

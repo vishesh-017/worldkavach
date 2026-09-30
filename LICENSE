@@ -1,0 +1,65 @@
+PROPRIETARY AND CONFIDENTIAL SOURCE-AVAILABLE SOFTWARE LICENSE
+WORLDKAVACH SECOPS DAST & CYBER DEFENSE PLATFORM
+COPYRIGHT (C) 2026 VISHESH-017 / WORLDKAVACH PROJECT CONTRIBUTORS. ALL RIGHTS RESERVED.
+
+===============================================================================
+IMPORTANT — READ CAREFULLY BEFORE ACCESSING OR VIEWING THIS REPOSITORY
+===============================================================================
+
+This repository and all associated files, source code, scripts, documentation, 
+graphical assets, logos, user interface designs, architectural schematics, 
+telemetry protocols, deterministic proof algorithms, and synthetic exploits 
+(collectively, the "Software") are the exclusive, proprietary intellectual property 
+of Vishesh (@vishesh-017) and the WorldKavach Project ("Licensor").
+
+THIS SOFTWARE IS NOT OPEN SOURCE. 
+THIS IS NOT A PERMISSIVE, MIT, APACHE, OR BSD LICENSED REPOSITORY.
+
+By accessing, viewing, browsing, or inspecting any part of this repository, you 
+unconditionally agree to be bound by the following legally binding terms:
+
+1. ABSOLUTE PROHIBITION ON COPYING AND REPRODUCTION
+   No individual, organization, automated agent, web scraper, or machine-learning 
+   pipeline is granted permission to copy, duplicate, transcribe, screenshot for reuse, 
+   or replicate any part of this Software, in whole or in part, in any form or media, 
+   without express prior written consent executed by the Licensor.
+
+2. STRICT PROHIBITION ON FORKING AND DERIVATIVE WORKS
+   Creating public or private forks, copies, mirrors, branches, derivative software, 
+   translations, or adapted implementations based on this codebase, its architecture, 
+   its multi-agent pipeline (AST Discoverer, DAST Prover, Surgical Fixer), or its 
+   Command HUD interface is EXPRESSLY FORBIDDEN. Any unauthorized fork or derivative 
+   work constitutes direct and willful copyright infringement.
+
+3. PROHIBITION ON CLONING, DOWNLOADING, AND REDISTRIBUTION
+   You may NOT clone, download, mirror, host, redistribute, publish, sublicense, 
+   package, sell, lease, or make available this Software or any portion thereof 
+   to any third party, whether via Git repositories, cloud hosting, package registries, 
+   or offline storage media.
+
+4. PROHIBITION ON REVERSE ENGINEERING & AI DATASET INGESTION
+   Reverse engineering, decompilation, disassembly, extraction of internal prompt 
+   logic, or use of this repository's source code for training, fine-tuning, or 
+   benchmarking artificial intelligence / large language models without written 
+   permission is strictly prohibited.
+
+5. RESTRICTED IN-SITU EVALUATION ONLY
+   Authorized judges, evaluators, or designated security reviewers are granted a 
+   temporary, non-exclusive, non-transferable, revocable license strictly to view 
+   and evaluate the Software in-situ within this official repository. This access 
+   confers NO rights of ownership, distribution, execution outside the authorized 
+   context, or copying.
+
+6. ENFORCEMENT, DMCA TAKEDOWNS, AND STATUTORY DAMAGES
+   The Licensor actively monitors public and private repositories for unauthorized 
+   clones and forks. Any unauthorized copy, fork, or mirror will be immediately 
+   subjected to a Digital Millennium Copyright Act (DMCA) Takedown Notice, account 
+   infringement reporting to GitHub Inc., and formal legal action for copyright 
+   infringement, injunctive relief, and statutory damages to the fullest extent of 
+   applicable law.
+
+===============================================================================
+For formal licensing inquiries, commercial partnerships, or evaluation access:
+Repository: https://github.com/vishesh-017/worldkavach
+Owner: Vishesh (@vishesh-017)
+===============================================================================
