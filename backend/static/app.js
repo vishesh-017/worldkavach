@@ -256,6 +256,10 @@ let ws;
       document.getElementById('page-heading').innerText = headings[viewId] || 'Executive Overview';
 
       if (viewId === 'surface') {
+        fetch('/api/assessment/state').then(r => r.json()).then(d => {
+          if (d.status) updateScanIndicator(d.status);
+          if (d.stats) updateStats(d.stats);
+        }).catch(() => {});
         setTimeout(() => {
           if (currentMapData) {
             renderNetwork(currentMapData, false);
@@ -309,6 +313,7 @@ let ws;
 
     function handleMessage(msg) {
       if (msg.type === 'INIT_STATE' || msg.type === 'ATTACK_SURFACE_READY') {
+        if (msg.status) updateScanIndicator(msg.status);
         if (msg.stats) updateStats(msg.stats);
         if (msg.surface_map) {
           currentMapData = msg.surface_map;
@@ -463,9 +468,12 @@ let ws;
     function updateScanIndicator(status) {
       const txt = document.getElementById('pulse-txt');
       const ind = document.getElementById('pulse-ind');
-      txt.innerText = status;
-      if (status === 'RUNNING') ind.className = 'pulse-dot running';
-      else ind.className = 'pulse-dot';
+      const s = status || 'COMPLETED';
+      if (txt) txt.innerText = s;
+      if (ind) {
+        if (s === 'RUNNING') ind.className = 'pulse-dot running';
+        else ind.className = 'pulse-dot';
+      }
     }
 
     function updateStats(s) {
@@ -645,8 +653,9 @@ let ws;
 
       const options = {
         physics: {
-          stabilization: { iterations: 120 },
-          barnesHut: { gravitationalConstant: -3000, springLength: 90, damping: 0.09 }
+          enabled: true,
+          stabilization: { iterations: 150, updateInterval: 10 },
+          barnesHut: { gravitationalConstant: -3000, springLength: 90, springConstant: 0.04, damping: 0.5 }
         },
         interaction: { hover: true, tooltipDelay: 100, zoomView: true, dragView: true }
       };
@@ -768,6 +777,7 @@ let ws;
             }
           });
           surfaceNetwork.once('stabilizationIterationsDone', () => {
+            surfaceNetwork.setOptions({ physics: { enabled: false } });
             surfaceNetwork.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
           });
         } else {
@@ -1307,6 +1317,7 @@ let ws;
       }
 
       fetch('/api/assessment/state').then(r => r.json()).then(d => {
+        if (d.status) updateScanIndicator(d.status);
         updateStats(d.stats);
         if (d.findings) renderFindings(d.findings);
       });
