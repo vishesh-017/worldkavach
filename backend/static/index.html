@@ -307,6 +307,7 @@
       flex-direction: column;
       overflow: hidden;
       background-color: var(--bg-abyss);
+      position: relative;
     }
 
     .top-navbar {
@@ -651,10 +652,10 @@
        ========================================================================== */
     .tactical-dual-deck {
       display: grid;
-      grid-template-columns: 1.35fr 0.85fr;
+      grid-template-columns: 1.32fr 0.88fr;
       gap: 0.75rem;
       flex: 1;
-      min-height: 0;
+      min-height: 480px;
     }
 
     .deck-panel {
@@ -780,18 +781,85 @@
       min-width: 0;
     }
 
+    /* Executive Overview Live Attack Surface Topology Map */
+    .map-deck {
+      background: rgba(9, 15, 29, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.75rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      min-height: 480px;
+      height: 100%;
+      backdrop-filter: blur(18px);
+    }
+    .map-deck-body {
+      flex: 1;
+      position: relative;
+      min-height: 410px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 240, 255, 0.12);
+      background: #020612;
+      margin-top: 0.15rem;
+    }
+    .overview-map-canvas {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      min-height: 410px;
+      position: relative;
+      background: #020612;
+    }
+    .overview-map-legend {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      background: rgba(4, 9, 22, 0.88);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 0.22rem 0.55rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      font-size: 0.6rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .legend-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .live-dot-pulse {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulseCyan 1.8s infinite ease-in-out;
+      margin-left: 0.35rem;
+    }
+
     /* Mini Radar Preview Canvas */
     .mini-radar-box {
       background: #02050e;
       border: 1px solid var(--border-subtle);
       border-radius: 6px;
       height: 100px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
       position: relative;
       overflow: hidden;
       display: flex;
@@ -868,7 +936,7 @@
     /* Slide-out Drawer */
     .node-drawer {
       position: absolute;
-      top: 0; right: -380px; width: 370px; bottom: 0;
+      top: 0; right: -400px; width: 380px; bottom: 0;
       background: rgba(6, 11, 24, 0.98);
       backdrop-filter: blur(24px);
       border-left: 1px solid var(--border-focus);
@@ -878,7 +946,7 @@
       flex-direction: column;
       gap: 0.85rem;
       transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 30;
+      z-index: 60;
       overflow-y: auto;
     }
     .node-drawer.open { right: 0; }
@@ -2228,117 +2296,137 @@
             </div>
           </div>
 
-          <!-- Tactical Dual-Deck (Airy & Lightweight) -->
+          <!-- Tactical Dual-Deck (Attack Surface Map on Left, Agent Swarm & Deliverables on Right) -->
           <div class="tactical-dual-deck">
-            <!-- Left Deck: Confirmed Exploits & PoC Deliverables -->
-            <div class="deck-panel">
+            <!-- Left Deck: Live Interactive Attack Surface Map -->
+            <div class="deck-panel map-deck">
               <div class="deck-header">
                 <div class="deck-heading">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--rose)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-                  High Priority Confirmed Deliverables
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                    <path d="M2 12h20"></path>
+                  </svg>
+                  <span>Live Attack Surface Topology</span>
+                  <span class="live-dot-pulse" title="Live WebSocket Graph Streaming"></span>
                 </div>
-                <button class="btn" style="padding:0.18rem 0.45rem; font-size:0.65rem;" id="overview-view-all-btn" onclick="navTo('findings', null)">View All (0) &rarr;</button>
+                <div style="display:flex; gap:0.35rem; align-items:center;">
+                  <button class="btn" style="padding:0.18rem 0.45rem; font-size:0.65rem;" onclick="fitOverviewNetwork()" title="Fit Nodes to View">&#x229E; Fit View</button>
+                  <button class="btn" style="padding:0.18rem 0.45rem; font-size:0.65rem;" onclick="rebalanceOverviewGraph()" title="Rebalance Force-Directed Physics">&#8635; Physics</button>
+                  <button class="btn btn-glow" style="padding:0.18rem 0.55rem; font-size:0.65rem;" onclick="navTo('surface', null)">Expand Full &rarr;</button>
+                </div>
               </div>
 
-              <div class="deck-body" id="overview-findings-mount">
-                <div class="threat-row-item rose" onclick="openFindingModal('FIND-WM-001')">
-                  <div class="threat-row-left">
-                    <div class="threat-row-title">FIND-WM-001: Bypass of Script Controls via Static CSP Nonce</div>
-                    <div class="threat-row-meta">
-                      <span class="comp">vercel.json</span>
-                      <span>&bull;</span>
-                      <span style="color:var(--rose);">CVSS 9.3 (Critical)</span>
-                      <span>&bull;</span>
-                      <span style="color:var(--emerald);">&#10003; Live Trace Recorded</span>
-                    </div>
-                  </div>
-                  <div class="threat-row-right">
-                    <button class="btn" style="padding:0.2rem 0.48rem; font-size:0.65rem;">View PoC</button>
-                  </div>
-                </div>
-
-                <div class="threat-row-item rose" onclick="openFindingModal('FIND-WM-002')">
-                  <div class="threat-row-left">
-                    <div class="threat-row-title">FIND-WM-002: SSRF via TOCTOU DNS Rebinding in Pro MCP Proxy</div>
-                    <div class="threat-row-meta">
-                      <span class="comp">api/mcp-proxy.ts</span>
-                      <span>&bull;</span>
-                      <span style="color:var(--rose);">CVSS 7.1 (High)</span>
-                      <span>&bull;</span>
-                      <span style="color:var(--emerald);">&#10003; 127.0.0.1 Reflection Confirmed</span>
-                    </div>
-                  </div>
-                  <div class="threat-row-right">
-                    <button class="btn" style="padding:0.2rem 0.48rem; font-size:0.65rem;">View PoC</button>
-                  </div>
-                </div>
-
-                <div class="threat-row-item amber" onclick="openFindingModal('FIND-WM-004')">
-                  <div class="threat-row-left">
-                    <div class="threat-row-title">FIND-WM-004: Indirect Prompt Injection in AI Chat Analyst</div>
-                    <div class="threat-row-meta">
-                      <span class="comp">api/chat-analyst.ts</span>
-                      <span>&bull;</span>
-                      <span style="color:var(--amber);">CVSS 5.4 (Medium)</span>
-                      <span>&bull;</span>
-                      <span style="color:var(--emerald);">&#10003; System Prompt Override Verified</span>
-                    </div>
-                  </div>
-                  <div class="threat-row-right">
-                    <button class="btn" style="padding:0.2rem 0.48rem; font-size:0.65rem;">View PoC</button>
-                  </div>
+              <div class="map-deck-body">
+                <div id="overview-graph-mount" class="overview-map-canvas"></div>
+                <div class="overview-map-legend">
+                  <span class="legend-item"><span class="legend-dot" style="background:#0284c7; box-shadow:0 0 6px #0284c7;"></span> Target Core</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:#a855f7; box-shadow:0 0 6px #a855f7;"></span> Auth Gateway</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:#00f0ff; box-shadow:0 0 6px #00f0ff;"></span> API Route</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:#f97316; box-shadow:0 0 6px #f97316;"></span> Proxy</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:#ff0055; box-shadow:0 0 6px #ff0055;"></span> Exploited Vector</span>
                 </div>
               </div>
             </div>
 
-            <!-- Right Deck: Multi-Agent Swarm Status & Mini Radar Canvas -->
-            <div class="deck-panel">
-              <div class="deck-header">
-                <div class="deck-heading">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"/></svg>
-                  Autonomous 3-Agent Swarm
+            <!-- Right Deck: Multi-Agent Swarm Status (Top) & Confirmed Deliverables (Bottom Right) -->
+            <div class="deck-panel" style="display:flex; flex-direction:column; gap:0.5rem; height:100%; min-height:480px;">
+              <!-- Top: Autonomous 3-Agent Swarm -->
+              <div>
+                <div class="deck-header">
+                  <div class="deck-heading">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"/></svg>
+                    Autonomous 3-Agent Swarm
+                  </div>
+                  <span style="font-family:var(--font-mono); font-size:0.65rem; color:var(--emerald);">&#9679; ALL AGENTS ACTIVE</span>
                 </div>
-                <span style="font-family:var(--font-mono); font-size:0.65rem; color:var(--emerald);">&#9679; ALL AGENTS ACTIVE</span>
+
+                <div style="display:flex; flex-direction:column; gap:0.4rem; margin-top:0.45rem;">
+                  <div class="agent-status-row">
+                    <div class="agent-name">
+                      <span style="color:var(--cyan);">&#9679;</span>
+                      <span>AST Discoverer</span>
+                    </div>
+                    <span class="agent-badge">74 Routes Cataloged</span>
+                  </div>
+
+                  <div class="agent-status-row">
+                    <div class="agent-name">
+                      <span style="color:var(--rose);">&#9679;</span>
+                      <span>DAST Prover</span>
+                    </div>
+                    <span class="agent-badge" style="color:#ff85a2;">Deterministic Replay Active</span>
+                  </div>
+
+                  <div class="agent-status-row">
+                    <div class="agent-name">
+                      <span style="color:var(--emerald);">&#9679;</span>
+                      <span>Surgical Fixer</span>
+                    </div>
+                    <span class="agent-badge" style="color:#34d399;">Unified Diff Synthesizer</span>
+                  </div>
+                </div>
               </div>
 
-              <div class="deck-body" style="gap:0.45rem;">
-                <div class="agent-status-row">
-                  <div class="agent-name">
-                    <span style="color:var(--cyan);">&#9679;</span>
-                    <span>AST Discoverer</span>
+              <!-- Bottom: High Priority Confirmed Deliverables (Interchanged to Bottom Right) -->
+              <div style="flex:1; display:flex; flex-direction:column; min-height:0; margin-top:0.35rem;">
+                <div class="deck-header" style="border-top:1px solid var(--border-subtle); padding-top:0.45rem;">
+                  <div class="deck-heading">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--rose)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    High Priority Confirmed Deliverables
                   </div>
-                  <span class="agent-badge">74 Routes Cataloged</span>
+                  <button class="btn" style="padding:0.18rem 0.45rem; font-size:0.65rem;" id="overview-view-all-btn" onclick="navTo('findings', null)">View All (0) &rarr;</button>
                 </div>
 
-                <div class="agent-status-row">
-                  <div class="agent-name">
-                    <span style="color:var(--rose);">&#9679;</span>
-                    <span>DAST Prover</span>
+                <div class="deck-body" id="overview-findings-mount" style="margin-top:0.4rem; max-height:220px; overflow-y:auto; gap:0.4rem;">
+                  <div class="threat-row-item rose" onclick="openFindingModal('FIND-WM-001')">
+                    <div class="threat-row-left">
+                      <div class="threat-row-title">FIND-WM-001: Bypass of Script Controls via Static CSP Nonce</div>
+                      <div class="threat-row-meta">
+                        <span class="comp">vercel.json</span>
+                        <span>&bull;</span>
+                        <span style="color:var(--rose);">CVSS 9.3 (Critical)</span>
+                        <span>&bull;</span>
+                        <span style="color:var(--emerald);">&#10003; Live Trace Recorded</span>
+                      </div>
+                    </div>
+                    <div class="threat-row-right">
+                      <button class="btn" style="padding:0.2rem 0.48rem; font-size:0.65rem;">View PoC</button>
+                    </div>
                   </div>
-                  <span class="agent-badge" style="color:#ff85a2;">Deterministic Replay Active</span>
-                </div>
 
-                <div class="agent-status-row">
-                  <div class="agent-name">
-                    <span style="color:var(--emerald);">&#9679;</span>
-                    <span>Surgical Fixer</span>
+                  <div class="threat-row-item rose" onclick="openFindingModal('FIND-WM-002')">
+                    <div class="threat-row-left">
+                      <div class="threat-row-title">FIND-WM-002: SSRF via TOCTOU DNS Rebinding in Pro MCP Proxy</div>
+                      <div class="threat-row-meta">
+                        <span class="comp">api/mcp-proxy.ts</span>
+                        <span>&bull;</span>
+                        <span style="color:var(--rose);">CVSS 7.1 (High)</span>
+                        <span>&bull;</span>
+                        <span style="color:var(--emerald);">&#10003; 127.0.0.1 Reflection Confirmed</span>
+                      </div>
+                    </div>
+                    <div class="threat-row-right">
+                      <button class="btn" style="padding:0.2rem 0.48rem; font-size:0.65rem;">View PoC</button>
+                    </div>
                   </div>
-                  <span class="agent-badge" style="color:#34d399;">Unified Diff Synthesizer</span>
-                </div>
 
-                <!-- Mini Radar Interactive Box -->
-                <div class="mini-radar-box" onclick="navTo('surface', null)" style="cursor:pointer;" title="Click to open Full Attack Surface Canvas">
-                  <div class="mini-radar-grid"></div>
-                  <div class="radar-sweep-beam"></div>
-                  <div style="z-index:2; text-align:center; display:flex; flex-direction:column; align-items:center; gap:0.25rem;">
-                    <div style="font-size:0.75rem; font-weight:800; color:#fff;">Live Attack Topology Active</div>
-                    <div style="font-size:0.62rem; color:var(--cyan); font-family:var(--font-mono);">Click to Expand Tactical Graph &rarr;</div>
+                  <div class="threat-row-item amber" onclick="openFindingModal('FIND-WM-004')">
+                    <div class="threat-row-left">
+                      <div class="threat-row-title">FIND-WM-004: Indirect Prompt Injection in AI Chat Analyst</div>
+                      <div class="threat-row-meta">
+                        <span class="comp">api/chat-analyst.ts</span>
+                        <span>&bull;</span>
+                        <span style="color:var(--amber);">CVSS 5.4 (Medium)</span>
+                        <span>&bull;</span>
+                        <span style="color:var(--emerald);">&#10003; System Prompt Override Verified</span>
+                      </div>
+                    </div>
+                    <div class="threat-row-right">
+                      <button class="btn" style="padding:0.2rem 0.48rem; font-size:0.65rem;">View PoC</button>
+                    </div>
                   </div>
                 </div>
-
-                <button class="btn btn-glow" style="width:100%; justify-content:center; margin-top:0.2rem;" onclick="navTo('surface', null)">
-                  Explore Attack Surface Canvas &rarr;
-                </button>
               </div>
             </div>
           </div>
@@ -2366,41 +2454,6 @@
             </div>
 
             <div id="graph-mount-point"></div>
-
-            <!-- Slide-out Node Tactical Drawer -->
-            <div class="node-drawer" id="node-drawer">
-              <div class="drawer-top">
-                <div class="drawer-title" id="drawer-title">Endpoint Details</div>
-                <button style="background:transparent; border:none; color:var(--text-dark); cursor:pointer; font-size:1.1rem;" onclick="closeDrawer()">&times;</button>
-              </div>
-
-              <div>
-                <div style="font-size:0.62rem; color:var(--text-dark); text-transform:uppercase; font-family:var(--font-mono); font-weight:700;">Path Target</div>
-                <div id="drawer-path" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--cyan); margin-top:0.15rem; word-break:break-all;"></div>
-              </div>
-
-              <div>
-                <div style="font-size:0.62rem; color:var(--text-dark); text-transform:uppercase; font-family:var(--font-mono); font-weight:700;">Classification</div>
-                <div id="drawer-class" style="font-size:0.72rem; color:#fff; font-weight:700; margin-top:0.15rem;"></div>
-              </div>
-
-              <div>
-                <div style="font-size:0.62rem; color:var(--text-dark); text-transform:uppercase; font-family:var(--font-mono); font-weight:700;">AST Discovery Context</div>
-                <p id="drawer-desc" style="font-size:0.72rem; color:var(--text-muted); line-height:1.45; margin-top:0.2rem;"></p>
-              </div>
-
-              <div style="margin-top:0.4rem; padding-top:0.65rem; border-top:1px solid var(--border-subtle);">
-                <button class="btn btn-glow" style="width:100%; justify-content:center;" onclick="sendLiveProbeCurrent()">
-                  &#9889; Send Live HTTP DAST Probe
-                </button>
-              </div>
-
-              <div id="drawer-probe-results" style="display:none; margin-top:0.4rem;">
-                <div style="font-size:0.62rem; color:var(--emerald); font-family:var(--font-mono); font-weight:700; margin-bottom:0.2rem;">Live Response Trace</div>
-                <div id="probe-status-line" style="font-family:var(--font-mono); font-size:0.7rem; color:#fff; margin-bottom:0.25rem;"></div>
-                <div class="box-code" id="probe-headers" style="max-height:160px; font-size:0.65rem;"></div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -2585,6 +2638,41 @@
         </div>
 
       </div>
+
+      <!-- Slide-out Node Tactical Drawer (Shared across Overview & Surface tabs) -->
+      <div class="node-drawer" id="node-drawer">
+        <div class="drawer-top">
+          <div class="drawer-title" id="drawer-title">Endpoint Details</div>
+          <button style="background:transparent; border:none; color:var(--text-dark); cursor:pointer; font-size:1.1rem;" onclick="closeDrawer()">&times;</button>
+        </div>
+
+        <div>
+          <div style="font-size:0.62rem; color:var(--text-dark); text-transform:uppercase; font-family:var(--font-mono); font-weight:700;">Path Target</div>
+          <div id="drawer-path" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--cyan); margin-top:0.15rem; word-break:break-all;"></div>
+        </div>
+
+        <div>
+          <div style="font-size:0.62rem; color:var(--text-dark); text-transform:uppercase; font-family:var(--font-mono); font-weight:700;">Classification</div>
+          <div id="drawer-class" style="font-size:0.72rem; color:#fff; font-weight:700; margin-top:0.15rem;"></div>
+        </div>
+
+        <div>
+          <div style="font-size:0.62rem; color:var(--text-dark); text-transform:uppercase; font-family:var(--font-mono); font-weight:700;">AST Discovery Context</div>
+          <p id="drawer-desc" style="font-size:0.72rem; color:var(--text-muted); line-height:1.45; margin-top:0.2rem;"></p>
+        </div>
+
+        <div style="margin-top:0.4rem; padding-top:0.65rem; border-top:1px solid var(--border-subtle);">
+          <button class="btn btn-glow" style="width:100%; justify-content:center;" onclick="sendLiveProbeCurrent()">
+            &#9889; Send Live HTTP DAST Probe
+          </button>
+        </div>
+
+        <div id="drawer-probe-results" style="display:none; margin-top:0.4rem;">
+          <div style="font-size:0.62rem; color:var(--emerald); font-family:var(--font-mono); font-weight:700; margin-bottom:0.2rem;">Live Response Trace</div>
+          <div id="probe-status-line" style="font-family:var(--font-mono); font-size:0.7rem; color:#fff; margin-bottom:0.25rem;"></div>
+          <div class="box-code" id="probe-headers" style="max-height:160px; font-size:0.65rem;"></div>
+        </div>
+      </div>
   </main>
 </div> <!-- /#workspace-view -->
 
@@ -2647,7 +2735,8 @@
 
   <script>
     let ws;
-    let surfaceNetwork;
+    let surfaceNetwork = null;
+    let overviewNetwork = null;
     let currentFindings = [];
     let currentMapData = null;
     let activeModalFindingId = null;
@@ -2848,9 +2937,10 @@
 
     function toggleSidebar() {
       document.getElementById('app-sidebar').classList.toggle('collapsed');
-      if (surfaceNetwork) {
-        setTimeout(() => surfaceNetwork.fit(), 300);
-      }
+      setTimeout(() => {
+        if (surfaceNetwork) surfaceNetwork.fit();
+        if (overviewNetwork) overviewNetwork.fit();
+      }, 300);
     }
 
     function navTo(viewId, element) {
@@ -2892,7 +2982,11 @@
       if (viewId === 'surface') {
         setTimeout(() => {
           if (currentMapData) {
-            renderNetwork(currentMapData, true);
+            renderNetwork(currentMapData, false);
+            if (surfaceNetwork) {
+              surfaceNetwork.setSize('100%', '100%');
+              surfaceNetwork.fit();
+            }
           } else {
             fetch('/api/assessment/attack-surface')
               .then(r => r.json())
@@ -2900,6 +2994,16 @@
                 currentMapData = map;
                 renderNetwork(map, true);
               });
+          }
+        }, 80);
+      } else if (viewId === 'overview') {
+        setTimeout(() => {
+          if (currentMapData) {
+            renderNetwork(currentMapData, false);
+            if (overviewNetwork) {
+              overviewNetwork.setSize('100%', '100%');
+              overviewNetwork.fit();
+            }
           }
         }, 80);
       }
@@ -3072,33 +3176,16 @@
     /* ========================================================================
        ATTACK SURFACE GRAPH
        ======================================================================== */
-    function renderNetwork(mapData, forceRecreate = false) {
-      const container = document.getElementById('graph-mount-point');
-      if (!mapData || !mapData.nodes || !container) return;
-      if (typeof vis === 'undefined' || !vis.Network) {
-        console.warn('Vis.js library loading...');
-        return;
-      }
-
-      if (container.clientHeight === 0 || container.clientWidth === 0) {
-        currentMapData = mapData;
-        return;
-      }
-
-      if (surfaceNetwork && forceRecreate) {
-        try { surfaceNetwork.destroy(); } catch(e) {}
-        surfaceNetwork = null;
-      }
-
+    function createVisData(mapData) {
       const nodes = new vis.DataSet(mapData.nodes.map(n => {
         let color = '#00f0ff';
         let shape = 'dot';
         let size = 15;
 
         if (n.type === 'target') {
-          color = '#0284c7'; shape = 'hexagon'; size = 24;
+          color = '#0284c7'; shape = 'hexagon'; size = 22;
         } else if (n.type === 'proxy') {
-          color = '#f97316'; size = 18;
+          color = '#f97316'; size = 17;
         } else if (n.type === 'auth') {
           color = '#a855f7'; size = 16;
         } else if (n.type === 'asset') {
@@ -3115,39 +3202,93 @@
           shape: shape,
           size: size,
           font: { color: '#e2e8f0', size: 10, face: 'JetBrains Mono' },
-          shadow: { enabled: true, color: color, size: 10 }
+          shadow: { enabled: true, color: color, size: 8 }
         };
       }));
 
       const edges = new vis.DataSet(mapData.edges.map(e => ({
         from: e.source,
         to: e.target,
-        color: { color: 'rgba(255,255,255,0.12)', highlight: '#00f0ff' },
+        color: { color: 'rgba(255,255,255,0.14)', highlight: '#00f0ff' },
         width: 1.2,
         smooth: { type: 'continuous' }
       })));
 
-      const data = { nodes, edges };
+      return { nodes, edges };
+    }
+
+    function renderNetwork(mapData, forceRecreate = false) {
+      if (!mapData || !mapData.nodes) return;
+      currentMapData = mapData;
+      if (typeof vis === 'undefined' || !vis.Network) {
+        console.warn('Vis.js library loading...');
+        return;
+      }
+
       const options = {
         physics: {
           stabilization: { iterations: 120 },
-          barnesHut: { gravitationalConstant: -3200, springLength: 95 }
+          barnesHut: { gravitationalConstant: -3000, springLength: 90, damping: 0.09 }
         },
-        interaction: { hover: true, tooltipDelay: 100 }
+        interaction: { hover: true, tooltipDelay: 100, zoomView: true, dragView: true }
       };
 
-      if (!surfaceNetwork) {
-        surfaceNetwork = new vis.Network(container, data, options);
-        surfaceNetwork.on('click', (params) => {
-          if (params.nodes.length > 0) {
-            const nodeId = params.nodes[0];
-            const node = mapData.nodes.find(n => n.id === nodeId);
-            if (node) openDrawer(node);
-          }
-        });
-      } else {
-        surfaceNetwork.setData(data);
+      // 1. Executive Overview Topology Map (#overview-graph-mount)
+      const ovContainer = document.getElementById('overview-graph-mount');
+      if (ovContainer && ovContainer.clientHeight > 0 && ovContainer.clientWidth > 0) {
+        if (overviewNetwork && forceRecreate) {
+          try { overviewNetwork.destroy(); } catch(e) {}
+          overviewNetwork = null;
+        }
+        const ovData = createVisData(mapData);
+        if (!overviewNetwork) {
+          overviewNetwork = new vis.Network(ovContainer, ovData, options);
+          overviewNetwork.on('click', (params) => {
+            if (params.nodes.length > 0) {
+              const nodeId = params.nodes[0];
+              const node = mapData.nodes.find(n => n.id === nodeId);
+              if (node) openDrawer(node);
+            }
+          });
+          overviewNetwork.once('stabilizationIterationsDone', () => {
+            overviewNetwork.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+          });
+        } else {
+          overviewNetwork.setData(ovData);
+        }
       }
+
+      // 2. Full Attack Surface Canvas (#graph-mount-point)
+      const surfContainer = document.getElementById('graph-mount-point');
+      if (surfContainer && surfContainer.clientHeight > 0 && surfContainer.clientWidth > 0) {
+        if (surfaceNetwork && forceRecreate) {
+          try { surfaceNetwork.destroy(); } catch(e) {}
+          surfaceNetwork = null;
+        }
+        const surfData = createVisData(mapData);
+        if (!surfaceNetwork) {
+          surfaceNetwork = new vis.Network(surfContainer, surfData, options);
+          surfaceNetwork.on('click', (params) => {
+            if (params.nodes.length > 0) {
+              const nodeId = params.nodes[0];
+              const node = mapData.nodes.find(n => n.id === nodeId);
+              if (node) openDrawer(node);
+            }
+          });
+          surfaceNetwork.once('stabilizationIterationsDone', () => {
+            surfaceNetwork.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+          });
+        } else {
+          surfaceNetwork.setData(surfData);
+        }
+      }
+    }
+
+    function fitOverviewNetwork() {
+      if (overviewNetwork) overviewNetwork.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+    }
+    function rebalanceOverviewGraph() {
+      if (currentMapData) renderNetwork(currentMapData, true);
     }
 
     function fitNetwork() {
@@ -3427,10 +3568,7 @@
       });
       fetch('/api/assessment/attack-surface').then(r => r.json()).then(map => {
         currentMapData = map;
-        const container = document.getElementById('graph-mount-point');
-        if (container && container.clientHeight > 0) {
-          renderNetwork(map, true);
-        }
+        setTimeout(() => renderNetwork(map, true), 80);
       });
     });
 
@@ -3438,6 +3576,10 @@
       if (surfaceNetwork) {
         surfaceNetwork.setSize('100%', '100%');
         surfaceNetwork.fit();
+      }
+      if (overviewNetwork) {
+        overviewNetwork.setSize('100%', '100%');
+        overviewNetwork.fit();
       }
     });
   </script>
